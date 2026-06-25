@@ -129,6 +129,57 @@
   gap: 24rpx;
 }
 
+.workorder-notice {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  padding: 24rpx;
+  border-radius: 20rpx;
+  color: #FFFFFF;
+  box-shadow: 0 8rpx 18rpx rgba(15, 23, 42, 0.08);
+}
+
+.workorder-notice:active {
+  opacity: 0.84;
+  transform: scale(0.99);
+}
+
+.notice-repair {
+  background: linear-gradient(135deg, #EF4444, #DC2626);
+}
+
+.notice-maintain {
+  background: linear-gradient(135deg, #F97316, #EA580C);
+}
+
+.notice-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.notice-title {
+  display: block;
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.notice-desc {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  opacity: 0.9;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.notice-arrow {
+  flex-shrink: 0;
+  font-size: 24rpx;
+  font-weight: 600;
+  opacity: 0.95;
+}
+
 .card-title {
   font-size: 28rpx;
   font-weight: 600;

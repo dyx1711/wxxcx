@@ -1,115 +1,156 @@
 const { request } = require('../utils/request')
 
+const memoryCache = {}
+const pendingRequests = {}
+
+function cacheKey(name, data = {}) {
+  return `${name}:${JSON.stringify(data)}`
+}
+
 function callCloud(name, data = {}) {
   return wx.cloud.callFunction({ name, data }).then(res => res.result)
 }
 
+function callCloudCached(name, data = {}, maxAge = 20000) {
+  const key = cacheKey(name, data)
+  const now = Date.now()
+  const cached = memoryCache[key]
+  if (cached && now - cached.time < maxAge) {
+    return Promise.resolve(cached.result)
+  }
+  if (pendingRequests[key]) {
+    return pendingRequests[key]
+  }
+  pendingRequests[key] = callCloud(name, data)
+    .then(result => {
+      memoryCache[key] = { time: Date.now(), result }
+      return result
+    })
+    .finally(() => {
+      delete pendingRequests[key]
+    })
+  return pendingRequests[key]
+}
+
+function clearReadCache() {
+  Object.keys(memoryCache).forEach(key => {
+    delete memoryCache[key]
+  })
+}
+
+function mutateCloud(name, data = {}) {
+  return callCloud(name, data).then(result => {
+    clearReadCache()
+    return result
+  })
+}
+
 function login(profile = {}) {
-  return callCloud('userLogin', { profile })
+  return mutateCloud('userLogin', { profile })
 }
 
 function getHomeData() {
-  return callCloud('homeDashboard')
+  return callCloudCached('homeDashboard', {}, 15000)
 }
 
 function getDevices(params) {
-  return callCloud('deviceDirectorySearch', { action: 'list', ...params })
+  return callCloudCached('deviceDirectorySearch', { action: 'list', ...params }, 20000)
 }
 
 function getDeviceDetail(id) {
-  return callCloud('deviceDirectorySearch', { action: 'detail', id })
+  return callCloudCached('deviceDirectorySearch', { action: 'detail', id }, 45000)
 }
 
 function saveDevice(device) {
-  return callCloud('deviceArchiveEdit', { action: device.id || device._id ? 'update' : 'create', device })
+  return mutateCloud('deviceArchiveEdit', { action: device.id || device._id ? 'update' : 'create', device })
 }
 
 function deleteDevice(id) {
-  return callCloud('deviceArchiveEdit', { action: 'delete', id })
+  return mutateCloud('deviceArchiveEdit', { action: 'delete', id })
 }
 
 function getWorkorders(params) {
-  return callCloud('repairWorkOrder', { action: 'list', ...params })
+  return callCloudCached('repairWorkOrder', { action: 'list', ...params }, 15000)
 }
 
 function getWorkorderDetail(id) {
-  return callCloud('repairWorkOrder', { action: 'detail', id })
+  return callCloudCached('repairWorkOrder', { action: 'detail', id }, 30000)
 }
 
 function saveWorkorder(order) {
-  return callCloud('repairWorkOrder', { action: order.id || order._id ? 'update' : 'create', order })
+  return mutateCloud('repairWorkOrder', { action: order.id || order._id ? 'update' : 'create', order })
 }
 
 function dispatchWorkorder(id, assigneeOpenid) {
-  return callCloud('repairWorkOrder', { action: 'dispatch', id, assigneeOpenid })
+  return mutateCloud('repairWorkOrder', { action: 'dispatch', id, assigneeOpenid })
 }
 
 function startWorkorder(id) {
-  return callCloud('repairWorkOrder', { action: 'start', id })
+  return mutateCloud('repairWorkOrder', { action: 'start', id })
 }
 
 function completeWorkorder(id, trace) {
-  return callCloud('repairWorkOrder', { action: 'complete', id, trace })
+  return mutateCloud('repairWorkOrder', { action: 'complete', id, trace })
 }
 
 function deleteWorkorder(id) {
-  return callCloud('repairWorkOrderDelete', { id })
+  return mutateCloud('repairWorkOrderDelete', { id })
 }
 
 function getAssignableUsers() {
-  return callCloud('repairWorkOrder', { action: 'assignableUsers' })
+  return callCloudCached('repairWorkOrder', { action: 'assignableUsers' }, 30000)
 }
 
 function getMaintenanceRecords(params = {}) {
-  return callCloud('maintenanceRecordEdit', { action: 'list', ...params })
+  return callCloudCached('maintenanceRecordEdit', { action: 'list', ...params }, 20000)
 }
 
 function getMaintenanceRecord(id) {
-  return callCloud('maintenanceRecordEdit', { action: 'detail', id })
+  return callCloudCached('maintenanceRecordEdit', { action: 'detail', id }, 30000)
 }
 
 function saveMaintenanceRecord(record) {
-  return callCloud('maintenanceRecordEdit', { action: record.id || record._id ? 'update' : 'create', record })
+  return mutateCloud('maintenanceRecordEdit', { action: record.id || record._id ? 'update' : 'create', record })
 }
 
 function deleteMaintenanceRecord(id) {
-  return callCloud('maintenanceRecordDelete', { id })
+  return mutateCloud('maintenanceRecordDelete', { id })
 }
 
 function getPermissionUsers() {
-  return callCloud('userPermissionManage', { action: 'list' })
+  return callCloudCached('userPermissionManage', { action: 'list' }, 30000)
 }
 
 function savePermissionUser(user) {
-  return callCloud('userPermissionManage', { action: 'upsert', user })
+  return mutateCloud('userPermissionManage', { action: 'upsert', user })
 }
 
 function removePermissionUser(openid) {
-  return callCloud('userPermissionManage', { action: 'remove', openid })
+  return mutateCloud('userPermissionManage', { action: 'remove', openid })
 }
 
 function getEnergyReport() {
-  return callCloud('energyAnalysis', { action: 'report' })
+  return callCloudCached('energyAnalysis', { action: 'report' }, 20000)
 }
 
 function getEnergyDevices() {
-  return callCloud('energyAnalysis', { action: 'devices' })
+  return callCloudCached('energyAnalysis', { action: 'devices' }, 30000)
 }
 
 function saveEnergyData(record) {
-  return callCloud('energyAnalysis', { action: 'save', record })
+  return mutateCloud('energyAnalysis', { action: 'save', record })
 }
 
 function getEnergyTrend(params = {}) {
-  return callCloud('energyAnalysis', { action: 'trend', ...params })
+  return callCloudCached('energyAnalysis', { action: 'trend', ...params }, 20000)
 }
 
 function calculateEnergy(params = {}) {
-  return callCloud('energyAnalysis', { action: 'calculate', ...params })
+  return callCloudCached('energyAnalysis', { action: 'calculate', ...params }, 20000)
 }
 
 function createEnergyReport(params = {}) {
-  return callCloud('energyAnalysis', { action: 'createReport', ...params })
+  return callCloudCached('energyAnalysis', { action: 'createReport', ...params }, 20000)
 }
 
 function generateDeviceQrCode(id, envVersion = 'release') {

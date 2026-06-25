@@ -193,11 +193,34 @@ exports.main = async (event = {}) => {
   }
 
   if (action === 'list') {
-    const devicesRes = await db.collection(DEVICES).where({ deleted: _.neq(true) }).limit(1000).get()
+    const devicesRes = await db.collection(DEVICES).where({ deleted: _.neq(true) }).field({
+      _id: true,
+      name: true
+    }).limit(1000).get()
     const deviceLookup = buildDeviceLookup(devicesRes.data)
     const query = { deleted: _.neq(true) }
     if (event.status && event.status !== 'all') query.status = event.status
-    const res = await db.collection(WORKORDERS).where(query).orderBy('updatedAt', 'desc').limit(200).get()
+    const res = await db.collection(WORKORDERS).where(query).field({
+      _id: true,
+      no: true,
+      title: true,
+      location: true,
+      deviceId: true,
+      deviceName: true,
+      deviceType: true,
+      status: true,
+      repairType: true,
+      type: true,
+      repairTypeLabel: true,
+      typeLabel: true,
+      priority: true,
+      deadline: true,
+      assigneeOpenid: true,
+      reporterOpenid: true,
+      assigneeName: true,
+      createdAtText: true,
+      updatedAt: true
+    }).orderBy('updatedAt', 'desc').limit(200).get()
     const activeDeviceOrders = res.data.filter(item => (
       item.status === 'completed' || orderHasActiveDevice(item, deviceLookup)
     ))
@@ -208,7 +231,18 @@ exports.main = async (event = {}) => {
       visible = visible.filter(item => getRepairType(item) === normalizeRepairType(event.repairType))
     }
 
-    const allRes = await db.collection(WORKORDERS).where({ deleted: _.neq(true) }).limit(200).get()
+    const allRes = await db.collection(WORKORDERS).where({ deleted: _.neq(true) }).field({
+      _id: true,
+      deviceId: true,
+      deviceName: true,
+      status: true,
+      repairType: true,
+      type: true,
+      repairTypeLabel: true,
+      typeLabel: true,
+      assigneeOpenid: true,
+      reporterOpenid: true
+    }).limit(200).get()
     const activeCountOrders = allRes.data.filter(item => (
       item.status === 'completed' || orderHasActiveDevice(item, deviceLookup)
     ))
@@ -222,7 +256,7 @@ exports.main = async (event = {}) => {
       acc[item.status] = (acc[item.status] || 0) + 1
       return acc
     }, {})
-    const list = await addImageAccessUrls(visible.map(normalizeOrder))
+    const list = visible.map(normalizeOrder)
     return ok({ list, total: visible.length, counts })
   }
 

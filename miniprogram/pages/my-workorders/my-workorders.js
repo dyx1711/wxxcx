@@ -72,6 +72,7 @@ Page({
 
   goDetail(e) {
     const { id } = e.currentTarget.dataset
+    api.getWorkorderDetail(id).catch(() => {})
     wx.navigateTo({ url: `/pages/workorder-detail/workorder-detail?id=${id}` })
   },
 

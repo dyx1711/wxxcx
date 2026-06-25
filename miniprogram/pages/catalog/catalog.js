@@ -17,6 +17,7 @@ Page({
     page: 1,
     hasMore: true,
     loadingMore: false,
+    loadedOnce: false,
     mineOnly: false,
     canEdit: false
   },
@@ -34,7 +35,12 @@ Page({
     this.setData({ isLoggedIn, mineOnly: !!mineOnly, canEdit: !!(userInfo && userInfo.role === 'admin') })
     if (isLoggedIn) {
       wx.setNavigationBarTitle({ title: mineOnly ? '我的设备' : '目录' })
-      this.resetAndLoad()
+      if (mineOnly || app.globalData.catalogNeedsRefresh || !this.data.loadedOnce) {
+        app.globalData.catalogNeedsRefresh = false
+        this.resetAndLoad()
+      } else {
+        this.setData({ loading: false })
+      }
     } else {
       this.setData({ loading: false, devices: [] })
     }
@@ -115,7 +121,8 @@ Page({
           types: res.data.types || this.data.types,
           hasMore: res.data.hasMore,
           loading: false,
-          loadingMore: false
+          loadingMore: false,
+          loadedOnce: true
         })
       }
     } catch (e) {

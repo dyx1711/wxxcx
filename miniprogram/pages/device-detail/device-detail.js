@@ -71,6 +71,12 @@ Page({
     wx.navigateTo({ url: `/pages/workorder-edit/workorder-edit?deviceId=${this.data.device.id}` })
   },
 
+  goWorkorder(e) {
+    const { id } = e.currentTarget.dataset
+    if (!id) return
+    wx.navigateTo({ url: `/pages/workorder-detail/workorder-detail?id=${id}` })
+  },
+
   openGuideFile(e) {
     const { fileid, url, type } = e.currentTarget.dataset
     if (!fileid) return

@@ -235,6 +235,7 @@ Page({
       const res = await api.saveDevice(form)
       wx.hideLoading()
       if (res.code === 0) {
+        app.globalData.catalogNeedsRefresh = true
         wx.showToast({ title: '已保存', icon: 'success' })
         setTimeout(() => wx.navigateBack(), 600)
       } else {
@@ -261,6 +262,7 @@ Page({
           const result = await api.deleteDevice(id)
           wx.hideLoading()
           if (result.code === 0) {
+            app.globalData.catalogNeedsRefresh = true
             wx.showToast({ title: '已删除', icon: 'success' })
             setTimeout(() => wx.navigateBack({ delta: 2 }), 700)
           } else {

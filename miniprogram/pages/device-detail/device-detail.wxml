@@ -1,8 +1,8 @@
 <view class="page" wx:if="{{device}}">
   <!-- 设备头部 -->
   <view class="device-header">
-    <image wx:if="{{device.coverImageUrl || device.coverImage}}" class="device-thumb" src="{{device.coverImageUrl || device.coverImage}}" mode="aspectFill" />
-    <image wx:elif="{{device.images && device.images.length}}" class="device-thumb" src="{{device.images[0].url || device.images[0].fileID}}" mode="aspectFill" />
+    <image wx:if="{{device.coverImageUrl || device.coverImage}}" class="device-thumb" src="{{device.coverImageUrl || device.coverImage}}" mode="aspectFill" webp="{{true}}" />
+    <image wx:elif="{{device.images && device.images.length}}" class="device-thumb" src="{{device.images[0].url || device.images[0].fileID}}" mode="aspectFill" webp="{{true}}" />
     <view wx:else class="device-icon-wrap icon-{{device.status}}">⚙</view>
     <view class="device-main">
       <view class="name-row">
@@ -27,6 +27,20 @@
   </view>
 
   <view class="content" wx:if="{{activeTab === 0}}">
+    <view
+      wx:for="{{device.workorderNotices}}"
+      wx:key="id"
+      class="workorder-notice notice-{{item.colorClass}}"
+      data-id="{{item.id}}"
+      bindtap="goWorkorder"
+    >
+      <view class="notice-main">
+        <text class="notice-title">{{item.title}}{{item.count > 1 ? '（' + item.count + '个工单）' : ''}}</text>
+        <text wx:if="{{item.orderTitle}}" class="notice-desc">{{item.orderTitle}}</text>
+      </view>
+      <text class="notice-arrow">查看工单 ›</text>
+    </view>
+
     <view class="card">
       <text class="card-title">设备参数</text>
       <view class="info-row"><text class="info-label">设备编号</text><text class="info-val">{{device.code}}</text></view>

@@ -155,7 +155,7 @@ function normalizeTodo(item) {
 
 async function addTodoImageAccessUrls(todos = []) {
   const fileIDs = Array.from(new Set(todos.flatMap(todo => (
-    (todo.images || []).map(image => image.fileID).filter(Boolean)
+    (todo.images || []).slice(0, 1).map(image => image.fileID).filter(Boolean)
   ))))
   if (!fileIDs.length) return todos
 
@@ -170,7 +170,7 @@ async function addTodoImageAccessUrls(todos = []) {
 
   return todos.map(todo => ({
     ...todo,
-    images: (todo.images || []).map(image => ({
+    images: (todo.images || []).slice(0, 1).map(image => ({
       ...image,
       url: urlMap[image.fileID] || image.fileID
     }))
@@ -244,6 +244,8 @@ function buildMainDeviceAreas(devices, repairDeviceIds, maintainDeviceIds) {
     devices: area.names.map(name => {
       const items = deviceGroups[normalizeDeviceName(name)] || []
       return {
+        id: items[0] && items[0]._id || '',
+        deviceId: items[0] && items[0]._id || '',
         name,
         count: items.length,
         ...getMainDeviceStatus(items, repairDeviceIds, maintainDeviceIds)
@@ -257,15 +259,45 @@ exports.main = async () => {
   const user = await getUser(OPENID)
   if (!canView(user)) return fail(403, 'No permission to view dashboard')
 
-  const devicesRes = await db.collection(DEVICES).where({ deleted: _.neq(true) }).limit(1000).get()
+  const [devicesRes, ordersRes, energyRes] = await Promise.all([
+    db.collection(DEVICES).where({ deleted: _.neq(true) }).field({
+      _id: true,
+      name: true,
+      status: true,
+      type: true,
+      typeLabel: true
+    }).limit(1000).get(),
+    db.collection(WORKORDERS).where({
+      deleted: _.neq(true),
+      status: _.neq('completed')
+    }).field({
+      _id: true,
+      title: true,
+      location: true,
+      deviceId: true,
+      deviceName: true,
+      deviceType: true,
+      status: true,
+      repairType: true,
+      priority: true,
+      deadline: true,
+      images: true,
+      assigneeOpenid: true,
+      reporterOpenid: true,
+      assigneeName: true,
+      createdAtText: true,
+      updatedAt: true
+    }).orderBy('updatedAt', 'desc').limit(200).get(),
+    db.collection(ENERGY).where({ deleted: _.neq(true) }).field({
+      periodType: true,
+      periodKey: true,
+      energy: true
+    }).limit(1000).get()
+  ])
   const devices = devicesRes.data
   const totalDevices = devices.length
   const lookup = buildDeviceLookup(devices)
 
-  const ordersRes = await db.collection(WORKORDERS).where({
-    deleted: _.neq(true),
-    status: _.neq('completed')
-  }).orderBy('updatedAt', 'desc').limit(200).get()
   const activeOrders = ordersRes.data.filter(order => getOrderDeviceId(order, lookup))
   const visibleTodos = canManage(user)
     ? activeOrders
@@ -311,7 +343,6 @@ exports.main = async () => {
   const faultCount = faultDeviceIds.size
   const onlineCount = Math.max(totalDevices - faultCount - maintainCount, 0)
 
-  const energyRes = await db.collection(ENERGY).where({ deleted: _.neq(true) }).limit(1000).get()
   const energyRecords = energyRes.data
   const statusOverview = {
     total: totalDevices,

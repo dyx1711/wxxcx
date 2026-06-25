@@ -154,9 +154,21 @@ Page({
     wx.navigateTo({ url: '/pages/my-workorders/my-workorders?status=pending&repairType=repair' })
   },
 
+  goMainDeviceDetail(e) {
+    if (!app.checkLogin(true)) return
+    const { id, name } = e.currentTarget.dataset
+    if (!id) {
+      wx.showToast({ title: `${name || '设备'}未录入`, icon: 'none' })
+      return
+    }
+    api.getDeviceDetail(id).catch(() => {})
+    wx.navigateTo({ url: `/pages/device-detail/device-detail?id=${id}` })
+  },
+
   goWorkorderDetail(e) {
     if (!app.checkLogin(true)) return
     const { id } = e.currentTarget.dataset
+    api.getWorkorderDetail(id).catch(() => {})
     wx.navigateTo({ url: `/pages/workorder-detail/workorder-detail?id=${id}` })
   },
 

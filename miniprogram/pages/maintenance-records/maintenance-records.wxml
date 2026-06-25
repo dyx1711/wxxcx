@@ -46,6 +46,8 @@
           wx:key="fileID"
           src="{{image.url || image.fileID}}"
           mode="aspectFill"
+          lazy-load="{{true}}"
+          webp="{{true}}"
           data-fileid="{{image.url || image.fileID}}"
           data-record-index="{{index}}"
           catchtap="previewImage"

@@ -4,7 +4,8 @@ App({
   globalData: {
     userInfo: null,
     isLoggedIn: false,
-    catalogMineOnly: false
+    catalogMineOnly: false,
+    catalogNeedsRefresh: false
   },
 
   onLaunch() {

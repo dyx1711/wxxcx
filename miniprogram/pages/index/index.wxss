@@ -246,6 +246,11 @@
   box-shadow: 0 8rpx 18rpx rgba(15, 23, 42, 0.08);
 }
 
+.main-device-card:active {
+  opacity: 0.82;
+  transform: scale(0.98);
+}
+
 .main-device-name {
   display: block;
   font-size: 24rpx;

@@ -60,6 +60,7 @@ Page({
   goDevice() {
     const { deviceId } = this.data.order
     if (deviceId) {
+      api.getDeviceDetail(deviceId).catch(() => {})
       wx.navigateTo({ url: `/pages/device-detail/device-detail?id=${deviceId}` })
     }
   },
