@@ -48,6 +48,11 @@
       <input value="{{form.purchaseDate}}" data-field="purchaseDate" bindinput="onInput" placeholder="YYYY-MM-DD" />
     </view>
     <view class="field">
+      <text class="label">保养周期（月）</text>
+      <input type="number" value="{{form.maintenanceCycleMonths}}" data-field="maintenanceCycleMonths" bindinput="onInput" placeholder="例如 1、2、3；不填或填 0 表示不自动生成" />
+      <text wx:if="{{form.maintenanceNextAtText}}" class="field-tip">下次保养日期：{{form.maintenanceNextAtText}}</text>
+    </view>
+    <view class="field">
       <text class="label">相关参数</text>
       <textarea value="{{form.parameters}}" data-field="parameters" bindinput="onInput" placeholder="输入压力、温度、额定能力、安装要求等参数" />
     </view>

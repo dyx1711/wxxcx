@@ -228,6 +228,75 @@ function delay(data, ms = 300) {
   return new Promise(resolve => setTimeout(() => resolve(data), ms))
 }
 
+const AREA_ORDER = ['二级泵房', '次氯酸钠加药间', '鼓风机房']
+
+function normalizeSortText(value = '') {
+  return String(value)
+    .replace(/[０-９]/g, char => String.fromCharCode(char.charCodeAt(0) - 0xFEE0))
+    .replace(/\s+/g, '')
+    .trim()
+}
+
+function tokenizeSortText(value = '') {
+  const text = normalizeSortText(value)
+  return text.match(/\d+(?:\.\d+)?|\D+/g) || ['']
+}
+
+function naturalCompare(a = '', b = '') {
+  const left = tokenizeSortText(a)
+  const right = tokenizeSortText(b)
+  const max = Math.max(left.length, right.length)
+  for (let i = 0; i < max; i += 1) {
+    if (left[i] === undefined) return -1
+    if (right[i] === undefined) return 1
+    const leftNum = Number(left[i])
+    const rightNum = Number(right[i])
+    const bothNumbers = !Number.isNaN(leftNum) && !Number.isNaN(rightNum)
+    if (bothNumbers && leftNum !== rightNum) return leftNum - rightNum
+    if (!bothNumbers) {
+      const result = String(left[i]).localeCompare(String(right[i]), 'zh-Hans-CN', {
+        numeric: true,
+        sensitivity: 'base'
+      })
+      if (result !== 0) return result
+    }
+  }
+  return 0
+}
+
+function orderIndex(value = '', order = []) {
+  const text = normalizeSortText(value)
+  const index = order.findIndex(item => {
+    const key = normalizeSortText(item)
+    return text === key || text.includes(key)
+  })
+  return index === -1 ? order.length : index
+}
+
+function areaRank(device = {}) {
+  const candidates = [
+    device.location || '',
+    device.area || '',
+    `${device.location || ''}${device.area || ''}`,
+    `${device.area || ''}${device.location || ''}`
+  ].filter(Boolean)
+  return Math.min(...candidates.map(item => orderIndex(item, AREA_ORDER)), AREA_ORDER.length)
+}
+
+function compareDevices(a = {}, b = {}) {
+  const rankDiff = areaRank(a) - areaRank(b)
+  if (rankDiff !== 0) return rankDiff
+  const locationDiff = naturalCompare(a.location || '', b.location || '')
+  if (locationDiff !== 0) return locationDiff
+  const areaDiff = naturalCompare(a.area || '', b.area || '')
+  if (areaDiff !== 0) return areaDiff
+  const typeDiff = naturalCompare(a.typeLabel || a.type || '', b.typeLabel || b.type || '')
+  if (typeDiff !== 0) return typeDiff
+  const nameDiff = naturalCompare(a.name || '', b.name || '')
+  if (nameDiff !== 0) return nameDiff
+  return naturalCompare(a.code || '', b.code || '')
+}
+
 function filterDevices({ keyword, location, type, mineOnly, page = 1, pageSize = 10 }) {
   let list = [...DEVICES]
   if (mineOnly) {
@@ -247,6 +316,7 @@ function filterDevices({ keyword, location, type, mineOnly, page = 1, pageSize =
   if (type && type !== '全部') {
     list = list.filter(d => d.type === type)
   }
+  list.sort(compareDevices)
   const start = (page - 1) * pageSize
   const items = list.slice(start, start + pageSize)
   return {

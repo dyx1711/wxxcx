@@ -7,6 +7,7 @@ const _ = db.command
 const DEVICES = 'devices'
 const USERS = 'users'
 const WORKORDERS = 'repair_workorders'
+const ENERGY = 'energy_records'
 
 function ok(data) {
   return { code: 0, data }
@@ -23,6 +24,66 @@ async function getUser(openid) {
 
 function canEdit(user) {
   return user && user.role === 'admin'
+}
+
+function pad(n) {
+  return String(n).padStart(2, '0')
+}
+
+function formatDate(date) {
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
+}
+
+function addMonths(date, months) {
+  const d = new Date(date)
+  d.setMonth(d.getMonth() + months)
+  return d
+}
+
+function parseDateValue(value) {
+  if (!value) return null
+  if (value instanceof Date) return value
+  if (typeof value === 'string') {
+    const parsed = new Date(value)
+    return Number.isNaN(parsed.getTime()) ? null : parsed
+  }
+  if (typeof value === 'object') {
+    const raw = value.$date || value.date || value.value
+    if (raw) return parseDateValue(raw)
+  }
+  return null
+}
+
+function normalizeCycleMonths(value) {
+  const months = Math.floor(Number(value || 0))
+  if (!Number.isFinite(months) || months < 0) return 0
+  return Math.min(months, 120)
+}
+
+function buildMaintenanceSchedule(input, nowDate = new Date()) {
+  const maintenanceCycleMonths = normalizeCycleMonths(input.maintenanceCycleMonths)
+  const lastDate = parseDateValue(input.maintenanceLastAt) ||
+    parseDateValue(input.maintenanceLastAtText) ||
+    (maintenanceCycleMonths ? nowDate : null)
+
+  if (!maintenanceCycleMonths) {
+    return {
+      maintenanceCycleMonths: 0,
+      maintenanceNextAt: null,
+      maintenanceNextAtText: '',
+      maintenanceLastAt: input.maintenanceLastAt || null,
+      maintenanceLastAtText: input.maintenanceLastAtText || ''
+    }
+  }
+
+  const nextDate = addMonths(lastDate, maintenanceCycleMonths)
+  return {
+    maintenanceCycleMonths,
+    maintenanceLastAt: lastDate,
+    maintenanceLastAtText: formatDate(lastDate),
+    maintenanceNextAt: nextDate,
+    maintenanceNextAtText: formatDate(nextDate)
+  }
 }
 
 function pickDevice(input = {}) {
@@ -47,6 +108,7 @@ function pickDevice(input = {}) {
     manufacturer: String(input.manufacturer || '').trim(),
     power: String(input.power || '').trim(),
     parameters: String(input.parameters || '').trim(),
+    ...buildMaintenanceSchedule(input),
     maintenanceGuide: {
       text: String((input.maintenanceGuide && input.maintenanceGuide.text) || '').trim(),
       files: guideFiles
@@ -91,6 +153,61 @@ async function deleteRelatedTodos(device, openid, now) {
   return results.reduce((sum, count) => sum + count, 0)
 }
 
+async function softDeleteEnergyRecords(records, openid, now) {
+  const ids = Array.from(new Set(records.map(item => item && item._id).filter(Boolean)))
+  if (!ids.length) return 0
+
+  const results = await Promise.all(ids.map(id => db.collection(ENERGY).doc(id).update({
+    data: {
+      deleted: true,
+      deletedAt: now,
+      deletedBy: openid,
+      deleteReason: 'device_deleted',
+      updatedAt: now,
+      updatedBy: openid
+    }
+  }).then(() => 1).catch(() => 0)))
+
+  return results.reduce((sum, count) => sum + count, 0)
+}
+
+async function deleteRelatedEnergyData(device, openid, now) {
+  let deletedCount = 0
+
+  for (let i = 0; i < 20; i += 1) {
+    const res = await db.collection(ENERGY).where({
+      deleted: _.neq(true),
+      deviceId: device._id
+    }).field({
+      _id: true
+    }).limit(1000).get().catch(() => ({ data: [] }))
+
+    if (!res.data.length) break
+    deletedCount += await softDeleteEnergyRecords(res.data, openid, now)
+    if (res.data.length < 1000) break
+  }
+
+  if (!device.name) return deletedCount
+
+  for (let i = 0; i < 20; i += 1) {
+    const res = await db.collection(ENERGY).where({
+      deleted: _.neq(true),
+      deviceName: device.name
+    }).field({
+      _id: true,
+      deviceId: true
+    }).limit(1000).get().catch(() => ({ data: [] }))
+
+    const legacyRecords = res.data.filter(record => !record.deviceId || record.deviceId === device._id)
+    if (legacyRecords.length) {
+      deletedCount += await softDeleteEnergyRecords(legacyRecords, openid, now)
+    }
+    if (res.data.length < 1000 || !legacyRecords.length) break
+  }
+
+  return deletedCount
+}
+
 exports.main = async (event = {}) => {
   const { OPENID } = cloud.getWXContext()
   const user = await getUser(OPENID)
@@ -117,8 +234,11 @@ exports.main = async (event = {}) => {
         updatedBy: OPENID
       }
     })
-    const deletedTodoCount = await deleteRelatedTodos(deviceRes.data, OPENID, now)
-    return ok({ id, deletedTodoCount })
+    const [deletedTodoCount, deletedEnergyCount] = await Promise.all([
+      deleteRelatedTodos(deviceRes.data, OPENID, now),
+      deleteRelatedEnergyData(deviceRes.data, OPENID, now)
+    ])
+    return ok({ id, deletedTodoCount, deletedEnergyCount })
   }
 
   const device = pickDevice(event.device)

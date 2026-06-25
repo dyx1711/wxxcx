@@ -206,6 +206,11 @@
   color: #111827;
 }
 
+.info-val.warning {
+  color: #F97316;
+  font-weight: 600;
+}
+
 .stats-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;

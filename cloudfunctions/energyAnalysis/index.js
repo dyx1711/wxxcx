@@ -89,12 +89,56 @@ function normalizeRecord(item) {
   }
 }
 
+function buildDeviceLookup(devices = []) {
+  return devices.reduce((acc, device) => {
+    acc.byId[device._id] = device
+    if (device.name) acc.byName[device.name] = device
+    return acc
+  }, { byId: {}, byName: {} })
+}
+
+async function getActiveDeviceLookup(filterDeviceId = '') {
+  if (filterDeviceId) {
+    const deviceRes = await db.collection(DEVICES).doc(filterDeviceId).get().catch(() => null)
+    if (!deviceRes || !deviceRes.data || deviceRes.data.deleted) {
+      return buildDeviceLookup([])
+    }
+    return buildDeviceLookup([deviceRes.data])
+  }
+
+  const devicesRes = await db.collection(DEVICES).where({ deleted: _.neq(true) }).field({
+    _id: true,
+    name: true
+  }).limit(1000).get().catch(() => ({ data: [] }))
+  return buildDeviceLookup(devicesRes.data)
+}
+
+function attachActiveDevice(record, lookup) {
+  const device = record.deviceId
+    ? lookup.byId[record.deviceId]
+    : record.deviceName && lookup.byName[record.deviceName]
+
+  if (!device) return null
+
+  return {
+    ...record,
+    deviceId: record.deviceId || device._id,
+    deviceName: device.name || record.deviceName
+  }
+}
+
 async function fetchEnergyRecords(filter = {}) {
   const query = { deleted: _.neq(true) }
   if (filter.deviceId) query.deviceId = filter.deviceId
   if (filter.periodType) query.periodType = filter.periodType
-  const res = await db.collection(ENERGY).where(query).orderBy('periodKey', 'desc').limit(1000).get()
-  return res.data.map(normalizeRecord)
+  const [lookup, res] = await Promise.all([
+    getActiveDeviceLookup(filter.deviceId || ''),
+    db.collection(ENERGY).where(query).orderBy('periodKey', 'desc').limit(1000).get()
+  ])
+  return res.data
+    .map(record => attachActiveDevice(record, lookup))
+    .filter(Boolean)
+    .map(normalizeRecord)
 }
 
 function buildTrend(records, periodType, startKey, endKey) {
@@ -214,9 +258,14 @@ exports.main = async (event = {}) => {
     if (!input.deviceId || !input.deviceName) return fail(400, 'Device is required')
     if (!Number.isFinite(energy) || energy < 0) return fail(400, 'Invalid energy value')
 
+    const deviceRes = await db.collection(DEVICES).doc(input.deviceId).get().catch(() => null)
+    if (!deviceRes || !deviceRes.data || deviceRes.data.deleted) {
+      return fail(404, 'Device does not exist or has been deleted')
+    }
+
     const data = {
       deviceId: input.deviceId,
-      deviceName: input.deviceName,
+      deviceName: deviceRes.data.name || input.deviceName,
       periodType,
       periodKey,
       energy,

@@ -7,7 +7,7 @@
     <view class="device-main">
       <view class="name-row">
         <text class="device-name">{{device.name}}</text>
-        <status-tag status="{{device.status}}" />
+        <status-tag status="{{device.displayStatus || device.status}}" text="{{device.displayStatusLabel}}" />
       </view>
       <text class="device-meta">型号：{{device.model}} · {{device.typeLabel}}</text>
       <text class="device-meta">位置：{{device.location}} · {{device.area}}{{device.position ? ' · ' + device.position : ''}}</text>
@@ -48,6 +48,8 @@
       <view class="info-row"><text class="info-label">规格型号</text><text class="info-val">{{device.power}}</text></view>
       <view class="info-row" wx:if="{{device.displacement}}"><text class="info-label">排气量</text><text class="info-val">{{device.displacement}}</text></view>
       <view class="info-row"><text class="info-label">投用日期</text><text class="info-val">{{device.purchaseDate}}</text></view>
+      <view class="info-row" wx:if="{{device.maintenanceCycleMonths}}"><text class="info-label">保养周期</text><text class="info-val">{{device.maintenanceCycleMonths}}个月</text></view>
+      <view class="info-row" wx:if="{{device.maintenanceNextAtText}}"><text class="info-label">下次保养</text><text class="info-val warning">{{device.maintenanceNextAtText}}</text></view>
       <view class="info-row" wx:if="{{device.parameters}}"><text class="info-label">相关参数</text><text class="info-val">{{device.parameters}}</text></view>
     </view>
 

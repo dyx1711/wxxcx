@@ -21,6 +21,9 @@ Page({
       manufacturer: '',
       power: '',
       parameters: '',
+      maintenanceCycleMonths: '',
+      maintenanceLastAtText: '',
+      maintenanceNextAtText: '',
       maintenanceGuide: {
         text: '',
         files: []

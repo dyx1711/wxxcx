@@ -40,6 +40,23 @@ function formatNow() {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`
 }
 
+function formatDate(date) {
+  const pad = n => String(n).padStart(2, '0')
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
+}
+
+function addMonths(date, months) {
+  const d = new Date(date)
+  d.setMonth(d.getMonth() + months)
+  return d
+}
+
+function normalizeCycleMonths(value) {
+  const months = Math.floor(Number(value || 0))
+  if (!Number.isFinite(months) || months < 0) return 0
+  return Math.min(months, 120)
+}
+
 function orderNo() {
   const date = new Date()
   const pad = n => String(n).padStart(2, '0')
@@ -170,6 +187,32 @@ function buildDeviceLookup(devices) {
 function orderHasActiveDevice(order, lookup) {
   if (order.deviceId) return !!lookup.byId[order.deviceId]
   return !!(order.deviceName && lookup.byName[order.deviceName])
+}
+
+async function resetDeviceMaintenanceSchedule(order = {}, openid = '') {
+  if (!order.deviceId) return
+  const deviceRes = await db.collection(DEVICES).doc(order.deviceId).get().catch(() => null)
+  if (!deviceRes || !deviceRes.data || deviceRes.data.deleted) return
+
+  const completedDate = new Date()
+  const cycleMonths = normalizeCycleMonths(deviceRes.data.maintenanceCycleMonths)
+  const data = {
+    maintenanceLastAt: completedDate,
+    maintenanceLastAtText: formatDate(completedDate),
+    updatedAt: db.serverDate(),
+    updatedBy: openid
+  }
+
+  if (cycleMonths) {
+    const nextDate = addMonths(completedDate, cycleMonths)
+    data.maintenanceNextAt = nextDate
+    data.maintenanceNextAtText = formatDate(nextDate)
+  } else {
+    data.maintenanceNextAt = null
+    data.maintenanceNextAtText = ''
+  }
+
+  await db.collection(DEVICES).doc(order.deviceId).update({ data }).catch(() => null)
 }
 
 exports.main = async (event = {}) => {
@@ -427,6 +470,9 @@ exports.main = async (event = {}) => {
         updatedBy: OPENID
       }
     })
+    if (kind === 'maintain') {
+      await resetDeviceMaintenanceSchedule(order, OPENID)
+    }
     return ok({ id: event.id })
   }
 
