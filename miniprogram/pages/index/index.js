@@ -15,6 +15,7 @@ Page({
     energyPeriod: 'week',
     energyData: null,
     statusOverview: null,
+    statusPieStyle: '',
     mainDeviceAreas: []
   },
 
@@ -53,6 +54,7 @@ Page({
           todos,
           maintenanceTypes: res.data.maintenanceTypes || [],
           statusOverview,
+          statusPieStyle: this.buildStatusPieStyle(statusOverview),
           mainDeviceAreas: mainDeviceAreas || [],
           energyData: this.pickEnergyData(this.data.energyPeriod, { energyDay, energyWeek, energyMonth }),
           energyDay,
@@ -60,7 +62,6 @@ Page({
           energyMonth,
           loading: false
         })
-        setTimeout(() => this.drawStatusPie(), 50)
       }
     } catch (e) {
       wx.showToast({ title: '加载失败', icon: 'none' })
@@ -85,6 +86,25 @@ Page({
     if (period === 'day') return source.energyDay || empty
     if (period === 'month') return source.energyMonth || empty
     return source.energyWeek || empty
+  },
+
+  buildStatusPieStyle(statusOverview) {
+    if (!statusOverview || !statusOverview.pie || !statusOverview.pie.length) {
+      return 'background: #E5E7EB;'
+    }
+    const total = Math.max(Number(statusOverview.total || 0), 0)
+    if (!total) return 'background: #E5E7EB;'
+
+    let start = 0
+    const parts = statusOverview.pie.map(part => {
+      const count = Number(part.count || 0)
+      const angle = count / total * 360
+      const end = start + angle
+      const segment = `${part.color} ${start.toFixed(2)}deg ${end.toFixed(2)}deg`
+      start = end
+      return segment
+    })
+    return `background: conic-gradient(from -90deg, ${parts.join(', ')});`
   },
 
   drawStatusPie() {
@@ -152,6 +172,11 @@ Page({
   goPendingRepair() {
     if (!app.checkLogin(true)) return
     wx.navigateTo({ url: '/pages/my-workorders/my-workorders?status=pending&repairType=repair' })
+  },
+
+  goEnergyReport() {
+    if (!app.checkLogin(true)) return
+    wx.navigateTo({ url: '/pages/energy-report/energy-report' })
   },
 
   goMainDeviceDetail(e) {

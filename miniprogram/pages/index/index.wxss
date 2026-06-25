@@ -122,6 +122,11 @@
   color: #1E90FF;
 }
 
+.energy-card:active {
+  opacity: 0.9;
+  transform: scale(0.995);
+}
+
 .status-row {
   display: flex;
   align-items: center;

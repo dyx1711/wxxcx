@@ -37,7 +37,12 @@
         <view class="card">
           <text class="section-title">设备状态概览</text>
           <view class="status-row">
-            <canvas id="statusPie" type="2d" class="status-pie"></canvas>
+            <view class="status-pie ring-wrap" style="{{statusPieStyle}}">
+              <view class="ring-center">
+                <text class="ring-num">{{statusOverview.total || 0}}</text>
+                <text class="ring-label">总计</text>
+              </view>
+            </view>
             <view class="status-list">
               <view class="status-item">
                 <view class="dot dot-green"></view>
@@ -147,13 +152,13 @@
       </view>
 
       <view class="section">
-        <view class="card">
+        <view class="card energy-card" bindtap="goEnergyReport">
           <view class="section-header">
             <text class="section-title">能耗趋势</text>
             <view class="period-switch">
-              <text class="period-btn {{energyPeriod === 'day' ? 'active' : ''}}" data-period="day" bindtap="switchEnergy">日</text>
-              <text class="period-btn {{energyPeriod === 'week' ? 'active' : ''}}" data-period="week" bindtap="switchEnergy">周</text>
-              <text class="period-btn {{energyPeriod === 'month' ? 'active' : ''}}" data-period="month" bindtap="switchEnergy">月</text>
+              <text class="period-btn {{energyPeriod === 'day' ? 'active' : ''}}" data-period="day" catchtap="switchEnergy">日</text>
+              <text class="period-btn {{energyPeriod === 'week' ? 'active' : ''}}" data-period="week" catchtap="switchEnergy">周</text>
+              <text class="period-btn {{energyPeriod === 'month' ? 'active' : ''}}" data-period="month" catchtap="switchEnergy">月</text>
             </view>
           </view>
           <view class="chart" wx:if="{{energyData.data.length}}">
