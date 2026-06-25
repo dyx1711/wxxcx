@@ -1,0 +1,174 @@
+.page {
+  min-height: 100vh;
+  background: #F5F5F5;
+  padding: 24rpx 32rpx 48rpx;
+}
+
+.identity-card,
+.admin-card,
+.user-list,
+.menu-card {
+  background: #fff;
+  border-radius: 16rpx;
+  overflow: hidden;
+  margin-bottom: 24rpx;
+}
+
+.identity-card,
+.admin-card,
+.user-list {
+  padding: 28rpx 32rpx;
+}
+
+.section-title {
+  display: block;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 24rpx;
+}
+
+.identity-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 24rpx;
+  padding: 14rpx 0;
+  font-size: 26rpx;
+  color: #374151;
+}
+
+.openid {
+  max-width: 460rpx;
+  text-align: right;
+  word-break: break-all;
+  color: #6B7280;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 32rpx;
+  border-bottom: 1rpx solid #F9FAFB;
+}
+
+.menu-item.no-border {
+  border-bottom: none;
+}
+
+.menu-title {
+  font-size: 28rpx;
+  color: #111827;
+}
+
+.arrow {
+  font-size: 26rpx;
+  color: #9CA3AF;
+}
+
+.field {
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #F3F4F6;
+}
+
+.label {
+  display: block;
+  font-size: 24rpx;
+  color: #6B7280;
+  margin-bottom: 10rpx;
+}
+
+input,
+.picker {
+  font-size: 28rpx;
+  color: #111827;
+  min-height: 48rpx;
+}
+
+.switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22rpx 0;
+  font-size: 28rpx;
+  color: #111827;
+  border-bottom: 1rpx solid #F3F4F6;
+}
+
+.form-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16rpx;
+  margin-top: 24rpx;
+}
+
+.primary-btn,
+.secondary-btn {
+  margin: 0;
+  border-radius: 16rpx;
+  font-size: 28rpx;
+}
+
+.primary-btn {
+  background: #111827;
+  color: #fff;
+}
+
+.secondary-btn {
+  background: #F3F4F6;
+  color: #374151;
+}
+
+.primary-btn::after,
+.secondary-btn::after {
+  border: none;
+}
+
+.user-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid #F3F4F6;
+}
+
+.user-item:last-child {
+  border-bottom: none;
+}
+
+.user-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-name {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #111827;
+}
+
+.user-meta,
+.user-openid {
+  display: block;
+  margin-top: 6rpx;
+  font-size: 24rpx;
+  color: #6B7280;
+}
+
+.user-openid {
+  word-break: break-all;
+}
+
+.remove {
+  color: #EF4444;
+  font-size: 26rpx;
+  flex-shrink: 0;
+}
+
+.loading {
+  text-align: center;
+  padding: 60rpx;
+  color: #9CA3AF;
+}

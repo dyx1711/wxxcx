@@ -1,0 +1,83 @@
+<view class="page">
+  <view wx:if="{{loading}}" class="loading">加载中...</view>
+  <view wx:else class="form-card">
+    <view class="field">
+      <text class="label">设备名称</text>
+      <input value="{{form.name}}" data-field="name" bindinput="onInput" placeholder="例如 空压机 A-001" />
+    </view>
+    <view class="field">
+      <text class="label">设备型号</text>
+      <input value="{{form.model}}" data-field="model" bindinput="onInput" placeholder="例如 SA-75A" />
+    </view>
+    <view class="field">
+      <text class="label">设备类型</text>
+      <input value="{{form.type}}" data-field="type" bindinput="onInput" placeholder="例如 空压机、PLC" />
+    </view>
+    <view class="field">
+      <text class="label">备注</text>
+      <input value="{{form.typeLabel}}" data-field="typeLabel" bindinput="onInput" placeholder="可选" />
+    </view>
+    <view class="field">
+      <text class="label">所在位置</text>
+      <input value="{{form.location}}" data-field="location" bindinput="onInput" placeholder="例如 车间A" />
+    </view>
+    <view class="field two">
+      <view>
+        <text class="label">区域</text>
+        <input value="{{form.area}}" data-field="area" bindinput="onInput" placeholder="例如 1区" />
+      </view>
+      <view>
+        <text class="label">具体点位</text>
+        <input value="{{form.position}}" data-field="position" bindinput="onInput" placeholder="例如 3号位" />
+      </view>
+    </view>
+    <view class="field">
+      <text class="label">设备编号</text>
+      <input value="{{form.code}}" data-field="code" bindinput="onInput" placeholder="例如 EQ-2024-A001" />
+    </view>
+    <view class="field">
+      <text class="label">生产厂家</text>
+      <input value="{{form.manufacturer}}" data-field="manufacturer" bindinput="onInput" placeholder="厂家名称" />
+    </view>
+    <view class="field">
+      <text class="label">功率规格</text>
+      <input value="{{form.power}}" data-field="power" bindinput="onInput" placeholder="例如 75 kW" />
+    </view>
+    <view class="field">
+      <text class="label">投用日期</text>
+      <input value="{{form.purchaseDate}}" data-field="purchaseDate" bindinput="onInput" placeholder="YYYY-MM-DD" />
+    </view>
+    <view class="field">
+      <text class="label">相关参数</text>
+      <textarea value="{{form.parameters}}" data-field="parameters" bindinput="onInput" placeholder="输入压力、温度、额定能力、安装要求等参数" />
+    </view>
+    <view class="field">
+      <text class="label">维修指南</text>
+      <textarea value="{{form.maintenanceGuide.text}}" data-field="maintenanceGuide.text" bindinput="onInput" placeholder="输入设备维修步骤、注意事项或保养要求" />
+      <button class="file-btn" loading="{{uploadingGuide}}" bindtap="chooseGuideFile">上传 Word/PDF 指南</button>
+      <view class="guide-file-list" wx:if="{{form.maintenanceGuide.files && form.maintenanceGuide.files.length}}">
+        <view class="guide-file" wx:for="{{form.maintenanceGuide.files}}" wx:key="fileID">
+          <text class="guide-file-name" data-fileid="{{item.fileID}}" data-url="{{item.url}}" data-type="{{item.type}}" catchtap="openGuideFile">{{item.name}}</text>
+          <text class="guide-file-remove" data-index="{{index}}" catchtap="removeGuideFile">移除</text>
+        </view>
+      </view>
+    </view>
+    <view class="field">
+      <text class="label">设备照片</text>
+      <button class="image-btn" loading="{{uploading}}" bindtap="chooseImage">拍照或从相册选择</button>
+      <view class="image-grid" wx:if="{{form.images && form.images.length}}">
+        <view class="image-item" wx:for="{{form.images}}" wx:key="fileID">
+          <image src="{{item.url || item.fileID}}" mode="aspectFill" data-fileid="{{item.url || item.fileID}}" bindtap="previewImage" />
+          <text wx:if="{{form.coverImage === item.fileID}}" class="cover-badge">封面</text>
+          <text wx:else class="cover-action" data-fileid="{{item.fileID}}" catchtap="setCoverImage">设封面</text>
+          <text class="image-remove" data-index="{{index}}" catchtap="removeImage">移除</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="footer {{form.id || form._id ? 'two' : ''}}">
+    <button wx:if="{{form.id || form._id}}" class="delete-btn" bindtap="deleteDevice">删除设备</button>
+    <button class="save-btn" loading="{{saving}}" bindtap="saveDevice">保存设备</button>
+  </view>
+</view>

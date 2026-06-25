@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>设备全生命周期管理 - 原型总览</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#1E90FF',
+            page: '#F5F5F5',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { background: #e8ecf0; }
+    .phone-frame {
+      width: 440px;
+      height: 956px;
+      border-radius: 44px;
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,.25), 0 0 0 8px #1a1a1a, 0 0 0 10px #333;
+      background: #000;
+    }
+    .phone-frame iframe {
+      width: 440px;
+      height: 956px;
+      border: none;
+      display: block;
+    }
+  </style>
+</head>
+<body class="min-h-screen p-8">
+  <header class="max-w-[1920px] mx-auto mb-10">
+    <h1 class="text-3xl font-bold text-gray-800">设备全生命周期管理 · 小程序原型</h1>
+    <p class="text-gray-500 mt-2">iPhone 16 Pro Max · 440 × 956 px · HTML + Tailwind CSS</p>
+  </header>
+
+  <div class="max-w-[1920px] mx-auto grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-12 justify-items-center">
+
+    <div class="flex flex-col items-center gap-3">
+      <span class="text-sm font-semibold text-gray-700 bg-white px-4 py-1.5 rounded-full shadow-sm">首页 · 已登录</span>
+      <div class="phone-frame"><iframe src="hall.html" title="首页-已登录"></iframe></div>
+    </div>
+
+    <div class="flex flex-col items-center gap-3">
+      <span class="text-sm font-semibold text-gray-700 bg-white px-4 py-1.5 rounded-full shadow-sm">首页 · 未登录</span>
+      <div class="phone-frame"><iframe src="hall-guest.html" title="首页-未登录"></iframe></div>
+    </div>
+
+    <div class="flex flex-col items-center gap-3">
+      <span class="text-sm font-semibold text-gray-700 bg-white px-4 py-1.5 rounded-full shadow-sm">目录</span>
+      <div class="phone-frame"><iframe src="catalog.html" title="目录"></iframe></div>
+    </div>
+
+    <div class="flex flex-col items-center gap-3">
+      <span class="text-sm font-semibold text-gray-700 bg-white px-4 py-1.5 rounded-full shadow-sm">我的 · 已登录</span>
+      <div class="phone-frame"><iframe src="mine.html" title="我的-已登录"></iframe></div>
+    </div>
+
+    <div class="flex flex-col items-center gap-3">
+      <span class="text-sm font-semibold text-gray-700 bg-white px-4 py-1.5 rounded-full shadow-sm">我的 · 未登录</span>
+      <div class="phone-frame"><iframe src="mine-guest.html" title="我的-未登录"></iframe></div>
+    </div>
+
+    <div class="flex flex-col items-center gap-3">
+      <span class="text-sm font-semibold text-gray-700 bg-white px-4 py-1.5 rounded-full shadow-sm">设备详情</span>
+      <div class="phone-frame"><iframe src="device-detail.html" title="设备详情"></iframe></div>
+    </div>
+
+    <div class="flex flex-col items-center gap-3">
+      <span class="text-sm font-semibold text-gray-700 bg-white px-4 py-1.5 rounded-full shadow-sm">工单详情</span>
+      <div class="phone-frame"><iframe src="workorder-detail.html" title="工单详情"></iframe></div>
+    </div>
+
+    <div class="flex flex-col items-center gap-3">
+      <span class="text-sm font-semibold text-gray-700 bg-white px-4 py-1.5 rounded-full shadow-sm">我的工单</span>
+      <div class="phone-frame"><iframe src="my-workorders.html" title="我的工单"></iframe></div>
+    </div>
+
+  </div>
+</body>
+</html>

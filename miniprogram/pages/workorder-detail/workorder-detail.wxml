@@ -1,0 +1,120 @@
+<view class="page" wx:if="{{order}}">
+  <view class="order-header">
+    <view class="tags">
+      <text class="tag">{{order.typeLabel}}</text>
+      <text class="tag" wx:if="{{order.priorityLabel}}">{{order.priorityLabel}}</text>
+      <text class="tag">{{order.status}}</text>
+    </view>
+    <text class="order-title">{{order.title}}</text>
+    <text class="order-no">工单号：{{order.no}}</text>
+  </view>
+
+  <view class="content">
+    <view class="card" wx:if="{{canManage && users.length && order.status !== 'completed'}}">
+      <text class="card-title">管理员派工</text>
+      <picker mode="selector" range="{{userLabels}}" value="{{assigneeIndex}}" bindchange="handleDispatch">
+        <view class="dispatch-picker">选择处理人并派送{{order.assigneeName ? ' · 当前：' + order.assigneeName : ''}}</view>
+      </picker>
+    </view>
+
+    <view class="card">
+      <text class="card-title">处理进度</text>
+      <view class="timeline" wx:if="{{order.progress && order.progress.length}}">
+        <view class="timeline-item" wx:for="{{order.progress}}" wx:key="title">
+          <view class="dot {{item.done ? 'done' : ''}}"></view>
+          <view class="timeline-content">
+            <text class="timeline-title {{item.done ? '' : 'muted'}}">{{item.title}}</text>
+            <text class="timeline-desc">{{item.desc}}</text>
+          </view>
+        </view>
+      </view>
+      <text wx:else class="caption">暂无进度信息</text>
+    </view>
+
+    <view class="card">
+      <text class="card-title">工单信息</text>
+      <view class="info-row" bindtap="goDevice">
+        <text class="info-label">关联设备</text>
+        <text class="info-val link">{{order.deviceName}}</text>
+      </view>
+      <view class="info-row" wx:if="{{order.faultType}}">
+        <text class="info-label">故障类型</text>
+        <text class="info-val">{{order.faultType}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">设备位置</text>
+        <text class="info-val">{{order.location || '-'}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">期望完成</text>
+        <text class="info-val danger">{{order.deadline || '未设置'}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">处理人</text>
+        <text class="info-val">{{order.assigneeName || '待派工'}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">报修人</text>
+        <text class="info-val">{{order.reporterName}}</text>
+      </view>
+    </view>
+
+    <view class="card" wx:if="{{order.description}}">
+      <text class="card-title">报修描述</text>
+      <text class="desc-text">{{order.description}}</text>
+    </view>
+
+    <view class="card" wx:if="{{order.images && order.images.length}}">
+      <text class="card-title">现场图片</text>
+      <view class="photo-grid">
+        <image
+          wx:for="{{order.images}}"
+          wx:key="fileID"
+          src="{{item.url || item.fileID}}"
+          mode="aspectFill"
+          data-fileid="{{item.url || item.fileID}}"
+          bindtap="previewImage"
+        />
+      </view>
+    </view>
+
+    <view class="card" wx:if="{{order.traces && order.traces.length}}">
+      <text class="card-title">工作留痕</text>
+      <view class="trace-item" wx:for="{{order.traces}}" wx:for-index="traceIndex" wx:key="createdAtText">
+        <text class="trace-meta">{{item.createdByName}} · {{item.createdAtText}}</text>
+        <text class="trace-content">{{item.content}}</text>
+        <view class="photo-grid" wx:if="{{item.images && item.images.length}}">
+          <image
+            wx:for="{{item.images}}"
+            wx:for-item="image"
+            wx:key="fileID"
+            src="{{image.url || image.fileID}}"
+            mode="aspectFill"
+            data-fileid="{{image.url || image.fileID}}"
+            data-trace-index="{{traceIndex}}"
+            catchtap="previewTraceHistory"
+          />
+        </view>
+      </view>
+    </view>
+
+    <view class="card" wx:if="{{order.status !== 'completed'}}">
+      <text class="card-title">处理留痕</text>
+      <textarea class="trace-input" value="{{traceContent}}" bindinput="onTraceInput" placeholder="填写处理过程、原因分析、替换部件、结果说明等" />
+      <button class="upload-btn" loading="{{uploading}}" bindtap="chooseTraceImage">上传处理图片</button>
+      <view class="photo-grid" wx:if="{{traceImages.length}}">
+        <view class="trace-image" wx:for="{{traceImages}}" wx:key="fileID">
+          <image src="{{item.fileID}}" mode="aspectFill" data-fileid="{{item.fileID}}" data-group="trace" bindtap="previewImage" />
+          <text class="image-remove" data-index="{{index}}" catchtap="removeTraceImage">移除</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="footer-actions" wx:if="{{order.status !== 'completed'}}">
+    <button class="btn-outline flex1" bindtap="handleStart">开始处理</button>
+    <button class="btn-primary-solid flex1" bindtap="handleComplete">完成工单</button>
+  </view>
+</view>
+
+<view wx:if="{{loading}}" class="loading">加载中...</view>

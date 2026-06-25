@@ -1,0 +1,31 @@
+.tag {
+  font-size: 20rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+  flex-shrink: 0;
+}
+
+.tag-normal, .tag-online {
+  background: #F0FDF4;
+  color: #22C55E;
+}
+
+.tag-running {
+  background: #EFF6FF;
+  color: #1E90FF;
+}
+
+.tag-maintain {
+  background: #FFF7ED;
+  color: #F97316;
+}
+
+.tag-alert, .tag-fault {
+  background: #FEF2F2;
+  color: #EF4444;
+}
+
+.tag-offline {
+  background: #F3F4F6;
+  color: #6B7280;
+}

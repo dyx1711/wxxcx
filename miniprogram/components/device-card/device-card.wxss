@@ -1,0 +1,77 @@
+.device-card {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 32rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+}
+
+.device-card:active {
+  opacity: 0.8;
+}
+
+.leading-status {
+  flex-shrink: 0;
+}
+
+.device-icon {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 24rpx;
+  flex-shrink: 0;
+}
+
+.device-thumb {
+  width: 104rpx;
+  height: 104rpx;
+  border-radius: 18rpx;
+  flex-shrink: 0;
+  background: #F3F4F6;
+}
+
+.icon-normal, .icon-online {
+  background: #F0FDF4;
+}
+
+.icon-alert, .icon-fault {
+  background: #FEF2F2;
+}
+
+.icon-offline {
+  background: #F3F4F6;
+}
+
+.device-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.device-name-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.device-name {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #111827;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.device-meta {
+  font-size: 24rpx;
+  color: #6B7280;
+  margin-top: 8rpx;
+  display: block;
+}
+
+.arrow {
+  font-size: 32rpx;
+  color: #D1D5DB;
+  flex-shrink: 0;
+}

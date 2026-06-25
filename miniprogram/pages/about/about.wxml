@@ -1,0 +1,9 @@
+<view class="page">
+  <view class="about-wrap">
+    <view class="logo">⚙</view>
+    <text class="app-name">设备全生命周期管理</text>
+    <text class="version">v1.0.0</text>
+    <text class="desc">为企业内部人员提供设备从采购、使用、维护到报废的全生命周期数据管理工具，提升设备运维效率。</text>
+    <text class="copyright">© 2026 华能制造</text>
+  </view>
+</view>

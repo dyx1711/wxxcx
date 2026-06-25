@@ -1,0 +1,195 @@
+.page {
+  min-height: 100vh;
+  background: #F5F5F5;
+  padding: 24rpx 32rpx 48rpx;
+}
+
+.report-header {
+  text-align: center;
+  margin-bottom: 24rpx;
+}
+
+.report-month {
+  font-size: 28rpx;
+  color: #6B7280;
+  display: block;
+}
+
+.report-total {
+  font-size: 56rpx;
+  font-weight: 700;
+  color: #1E90FF;
+  display: block;
+  margin: 16rpx 0;
+}
+
+.report-compare {
+  font-size: 24rpx;
+  color: #22C55E;
+}
+
+.card {
+  margin-bottom: 24rpx;
+}
+
+.card-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #111827;
+  display: block;
+  margin-bottom: 24rpx;
+}
+
+.field {
+  margin-bottom: 20rpx;
+}
+
+.field-row {
+  display: flex;
+  gap: 16rpx;
+  align-items: flex-end;
+}
+
+.flex1 {
+  flex: 1;
+}
+
+.label {
+  display: block;
+  font-size: 24rpx;
+  color: #6B7280;
+  margin-bottom: 10rpx;
+}
+
+.picker,
+input {
+  min-height: 72rpx;
+  line-height: 72rpx;
+  box-sizing: border-box;
+  padding: 0 20rpx;
+  border-radius: 12rpx;
+  background: #F9FAFB;
+  color: #111827;
+  font-size: 26rpx;
+}
+
+.line-chart {
+  width: 100%;
+  height: 360rpx;
+  margin-top: 12rpx;
+}
+
+.calc-btn,
+.save-btn,
+.preview-btn,
+.download-btn {
+  margin: 20rpx 0 0;
+  border-radius: 16rpx;
+  font-size: 28rpx;
+}
+
+.calc-btn,
+.preview-btn {
+  background: #EFF6FF;
+  color: #1E90FF;
+}
+
+.save-btn,
+.download-btn {
+  background: #1E90FF;
+  color: #fff;
+}
+
+.calc-btn::after,
+.save-btn::after,
+.preview-btn::after,
+.download-btn::after {
+  border: none;
+}
+
+.calc-result {
+  margin-top: 16rpx;
+  padding: 16rpx;
+  border-radius: 12rpx;
+  background: #F0FDF4;
+  color: #15803D;
+  font-size: 26rpx;
+}
+
+.rank-item {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 24rpx;
+}
+
+.rank-index {
+  width: 40rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #1E90FF;
+}
+
+.rank-name {
+  width: 200rpx;
+  font-size: 24rpx;
+  color: #374151;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rank-bar-wrap {
+  flex: 1;
+  height: 16rpx;
+  background: #F3F4F6;
+  border-radius: 8rpx;
+  overflow: hidden;
+}
+
+.rank-bar {
+  height: 100%;
+  background: #1E90FF;
+  border-radius: 8rpx;
+}
+
+.rank-val {
+  font-size: 24rpx;
+  color: #6B7280;
+  width: 96rpx;
+  text-align: right;
+}
+
+.action-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16rpx;
+  margin-bottom: 24rpx;
+}
+
+.action-row button {
+  margin-top: 0;
+}
+
+.record-row {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr;
+  gap: 12rpx;
+  padding: 18rpx 0;
+  border-bottom: 1rpx solid #F3F4F6;
+  font-size: 24rpx;
+  color: #374151;
+}
+
+.record-row.head {
+  color: #6B7280;
+  font-weight: 600;
+}
+
+.empty,
+.loading {
+  text-align: center;
+  padding: 80rpx 0;
+  color: #9CA3AF;
+  font-size: 28rpx;
+}

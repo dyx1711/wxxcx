@@ -1,0 +1,55 @@
+<view class="page">
+  <view wx:if="{{loading}}" class="loading">加载中...</view>
+  <view wx:else class="form-card">
+    <view class="field">
+      <text class="label">设备名称</text>
+      <input value="{{form.deviceName}}" data-field="deviceName" bindinput="onInput" placeholder="输入设备名称" />
+    </view>
+    <view class="field">
+      <text class="label">所在位置</text>
+      <input value="{{form.location}}" data-field="location" bindinput="onInput" placeholder="设备位置" />
+    </view>
+    <view class="field">
+      <text class="label">报修类型</text>
+      <picker mode="selector" range="{{repairTypeLabels}}" value="{{repairTypeIndex}}" bindchange="onRepairTypeChange">
+        <view class="picker">{{repairTypeLabels[repairTypeIndex]}}</view>
+      </picker>
+    </view>
+    <view class="field">
+      <text class="label">工单标题</text>
+      <input value="{{form.title}}" data-field="title" bindinput="onInput" placeholder="例如 空压机维修" />
+    </view>
+    <view class="field">
+      <text class="label">问题类型</text>
+      <input value="{{form.faultType}}" data-field="faultType" bindinput="onInput" placeholder="例如 异响、漏油、定期保养" />
+    </view>
+    <view class="field">
+      <text class="label">紧急程度</text>
+      <picker mode="selector" range="{{priorityLabels}}" value="{{priorityIndex}}" bindchange="onPriorityChange">
+        <view class="picker">{{priorityLabels[priorityIndex]}}</view>
+      </picker>
+    </view>
+    <view class="field">
+      <text class="label">期望完成时间</text>
+      <input value="{{form.deadline}}" data-field="deadline" bindinput="onInput" placeholder="例如 今天 18:00" />
+    </view>
+    <view class="field">
+      <text class="label">描述</text>
+      <textarea value="{{form.description}}" data-field="description" bindinput="onInput" placeholder="描述现场情况、故障现象或保养要求" />
+    </view>
+    <view class="field">
+      <text class="label">现场图片</text>
+      <button class="file-btn" loading="{{uploading}}" bindtap="chooseImage">上传图片或拍照</button>
+      <view class="image-grid" wx:if="{{form.images.length}}">
+        <view class="image-item" wx:for="{{form.images}}" wx:key="fileID">
+          <image src="{{item.fileID}}" mode="aspectFill" data-fileid="{{item.fileID}}" bindtap="previewImage" />
+          <text class="image-remove" data-index="{{index}}" catchtap="removeImage">移除</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="footer">
+    <button class="save-btn" loading="{{saving}}" bindtap="saveWorkorder">提交工单</button>
+  </view>
+</view>

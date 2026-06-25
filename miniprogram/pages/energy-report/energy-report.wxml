@@ -1,0 +1,104 @@
+<view class="page">
+  <view wx:if="{{loading}}" class="loading">加载中...</view>
+  <block wx:else>
+    <view class="report-header card">
+      <text class="report-month">{{report.month || '能耗分析'}}</text>
+      <text class="report-total">{{report.total || 0}} {{report.unit || 'kWh'}}</text>
+      <text class="report-compare">累计能耗 {{cumulative}} kWh</text>
+    </view>
+
+    <view class="card">
+      <text class="card-title">筛选与趋势</text>
+      <view class="field">
+        <text class="label">设备</text>
+        <picker mode="selector" range="{{deviceLabels}}" value="{{selectedDeviceIndex}}" bindchange="onDeviceChange">
+          <view class="picker">{{deviceLabels[selectedDeviceIndex]}}</view>
+        </picker>
+      </view>
+      <view class="field-row">
+        <view class="field flex1">
+          <text class="label">横坐标单位</text>
+          <picker mode="selector" range="{{periodLabels}}" value="{{chartPeriodIndex}}" bindchange="onChartPeriodChange">
+            <view class="picker">{{periodLabels[chartPeriodIndex]}}</view>
+          </picker>
+        </view>
+        <view class="field flex1">
+          <text class="label">开始日期</text>
+          <picker mode="date" value="{{startDate}}" bindchange="onStartDateChange">
+            <view class="picker">{{startDate || '不限'}}</view>
+          </picker>
+        </view>
+        <view class="field flex1">
+          <text class="label">结束日期</text>
+          <picker mode="date" value="{{endDate}}" bindchange="onEndDateChange">
+            <view class="picker">{{endDate || '不限'}}</view>
+          </picker>
+        </view>
+      </view>
+      <canvas id="energyChart" type="2d" class="line-chart"></canvas>
+      <button class="calc-btn" bindtap="calculateEnergy">计算选中范围总能耗</button>
+      <view wx:if="{{calcResult}}" class="calc-result">
+        <text>计算结果：{{calcResult.total}} {{calcResult.unit}}，共 {{calcResult.count}} 条记录</text>
+      </view>
+    </view>
+
+    <view class="card" wx:if="{{canEdit}}">
+      <text class="card-title">上传能耗数据</text>
+      <view class="field-row">
+        <view class="field flex1">
+          <text class="label">周期</text>
+          <picker mode="selector" range="{{periodLabels}}" value="{{uploadPeriodIndex}}" bindchange="onUploadPeriodChange">
+            <view class="picker">{{periodLabels[uploadPeriodIndex]}}</view>
+          </picker>
+        </view>
+        <view class="field flex1">
+          <text class="label">日期</text>
+          <picker mode="date" value="{{uploadDate}}" bindchange="onDateChange">
+            <view class="picker">{{uploadDate}}</view>
+          </picker>
+        </view>
+      </view>
+      <view class="field">
+        <text class="label">能耗 kWh</text>
+        <input type="digit" value="{{uploadEnergy}}" bindinput="onEnergyInput" placeholder="输入能耗数值" />
+      </view>
+      <view class="field">
+        <text class="label">备注</text>
+        <input value="{{uploadRemark}}" bindinput="onRemarkInput" placeholder="可选，例如抄表、导入、修正" />
+      </view>
+      <button class="save-btn" bindtap="saveEnergy">保存能耗数据</button>
+    </view>
+
+    <view class="card">
+      <text class="card-title">设备能耗排行</text>
+      <view class="rank-item" wx:for="{{report.topDevices}}" wx:key="name">
+        <text class="rank-index">{{index + 1}}</text>
+        <text class="rank-name">{{item.name}}</text>
+        <view class="rank-bar-wrap">
+          <view class="rank-bar" style="width: {{report.topDevices[0].value ? item.value / report.topDevices[0].value * 100 : 0}}%"></view>
+        </view>
+        <text class="rank-val">{{item.value}}</text>
+      </view>
+      <view wx:if="{{!report.topDevices || !report.topDevices.length}}" class="empty">暂无能耗数据</view>
+    </view>
+
+    <view class="action-row">
+      <button class="preview-btn" bindtap="previewReport">预览报告</button>
+      <button class="download-btn" bindtap="handleDownload">下载报告</button>
+    </view>
+
+    <view class="card" wx:if="{{previewRows.length}}">
+      <text class="card-title">报告预览</text>
+      <view class="record-row head">
+        <text>设备</text>
+        <text>时间</text>
+        <text>能耗</text>
+      </view>
+      <view class="record-row" wx:for="{{previewRows}}" wx:key="id">
+        <text>{{item.deviceName}}</text>
+        <text>{{item.periodKey}}</text>
+        <text>{{item.energy}} {{item.unit}}</text>
+      </view>
+    </view>
+  </block>
+</view>

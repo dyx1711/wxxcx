@@ -1,0 +1,178 @@
+.page {
+  min-height: 100vh;
+  background: #F5F5F5;
+  padding: 24rpx 32rpx;
+}
+
+.record-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.tabs {
+  display: flex;
+  gap: 12rpx;
+  margin-bottom: 20rpx;
+}
+
+.tab {
+  flex: 1;
+  text-align: center;
+  padding: 16rpx 0;
+  border-radius: 14rpx;
+  background: #fff;
+  color: #6B7280;
+  font-size: 26rpx;
+}
+
+.tab.active {
+  background: #111827;
+  color: #fff;
+  font-weight: 600;
+}
+
+.add-btn {
+  margin: 0 0 20rpx;
+  background: #111827;
+  color: #fff;
+  border-radius: 16rpx;
+  font-size: 28rpx;
+}
+
+.add-btn::after {
+  border: none;
+}
+
+.record-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8rpx;
+}
+
+.record-title {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.type-tag {
+  flex-shrink: 0;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+  font-size: 22rpx;
+  font-weight: 600;
+}
+
+.tag-maintain {
+  background: #ECFDF5;
+  color: #16A34A;
+}
+
+.tag-repair {
+  background: #FEF2F2;
+  color: #DC2626;
+}
+
+.record-device {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #111827;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.record-result {
+  font-size: 24rpx;
+  color: #22C55E;
+  background: #F0FDF4;
+  padding: 4rpx 16rpx;
+  border-radius: 8rpx;
+}
+
+.record-type {
+  font-size: 24rpx;
+  color: #6B7280;
+  display: block;
+}
+
+.record-content {
+  display: block;
+  margin-top: 12rpx;
+  font-size: 26rpx;
+  color: #374151;
+  line-height: 1.6;
+}
+
+.file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  margin-top: 16rpx;
+}
+
+.file-item {
+  font-size: 24rpx;
+  color: #1E90FF;
+  background: #EFF6FF;
+  padding: 12rpx 16rpx;
+  border-radius: 8rpx;
+}
+
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10rpx;
+  margin-top: 16rpx;
+}
+
+.image-grid image {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 10rpx;
+  background: #F3F4F6;
+}
+
+.record-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx solid #F9FAFB;
+}
+
+.record-date, .record-operator {
+  font-size: 24rpx;
+  color: #9CA3AF;
+}
+
+.delete-btn {
+  margin: 18rpx 0 0;
+  height: 64rpx;
+  line-height: 64rpx;
+  border-radius: 12rpx;
+  background: #FEF2F2;
+  color: #DC2626;
+  font-size: 24rpx;
+}
+
+.delete-btn::after {
+  border: none;
+}
+
+.loading {
+  text-align: center;
+  padding: 120rpx;
+  color: #9CA3AF;
+}
+
+.empty {
+  text-align: center;
+  padding: 120rpx 0;
+  color: #9CA3AF;
+  font-size: 28rpx;
+}

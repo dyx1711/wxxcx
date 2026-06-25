@@ -1,0 +1,47 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/catalog/catalog",
+    "pages/mine/mine",
+    "pages/device-detail/device-detail",
+    "pages/device-edit/device-edit",
+    "pages/workorder-detail/workorder-detail",
+    "pages/workorder-edit/workorder-edit",
+    "pages/my-workorders/my-workorders",
+    "pages/maintenance-records/maintenance-records",
+    "pages/maintenance-edit/maintenance-edit",
+    "pages/energy-report/energy-report",
+    "pages/settings/settings",
+    "pages/about/about"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTitleText": "设备管理",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#F5F5F5",
+    "backgroundTextStyle": "dark"
+  },
+  "tabBar": {
+    "custom": true,
+    "color": "#9CA3AF",
+    "selectedColor": "#1E90FF",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/catalog/catalog",
+        "text": "目录"
+      },
+      {
+        "pagePath": "pages/mine/mine",
+        "text": "我的"
+      }
+    ]
+  },
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

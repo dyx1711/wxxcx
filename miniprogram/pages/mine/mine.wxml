@@ -1,0 +1,76 @@
+<view class="page">
+  <block wx:if="{{!isLoggedIn}}">
+    <view class="guest-header">
+      <view class="avatar-placeholder">
+        <text class="avatar-icon">👤</text>
+      </view>
+      <button class="login-btn" bindtap="handleLogin" loading="{{logging}}">点击登录</button>
+      <text class="login-tip">微信云开发登录，验证白名单身份</text>
+    </view>
+
+    <view class="menu-disabled">
+      <view class="menu-item disabled">
+        <view class="menu-icon gray">📋</view>
+        <text class="menu-text gray">登录后查看工单</text>
+      </view>
+      <view class="menu-item disabled" bindtap="goAbout">
+        <view class="menu-icon gray">ℹ</view>
+        <text class="menu-text gray">关于我们</text>
+      </view>
+    </view>
+  </block>
+
+  <block wx:else>
+    <view class="user-header">
+      <view class="user-row">
+        <view class="avatar">
+          <text class="avatar-text">{{userInfo.nickName[0]}}</text>
+        </view>
+        <view class="user-info">
+          <text class="user-name">{{userInfo.nickName}}</text>
+          <text class="user-dept">{{userInfo.company}} · {{userInfo.department}}</text>
+          <text class="role-badge">{{userInfo.roleName || userInfo.role}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="menu-section">
+      <view class="menu-card">
+        <view class="menu-item" bindtap="goMyWorkorders">
+          <view class="menu-icon orange">📋</view>
+          <view class="menu-content">
+            <text class="menu-title">我的工单</text>
+          </view>
+          <text class="arrow">›</text>
+        </view>
+        <view class="menu-item" bindtap="goMaintenanceRecords">
+          <view class="menu-icon green">🔧</view>
+          <view class="menu-content">
+            <text class="menu-title">维修记录</text>
+            <text class="menu-sub">历史保养与维修记录</text>
+          </view>
+          <text class="arrow">›</text>
+        </view>
+        <view class="menu-item no-border" bindtap="goEnergyReport">
+          <view class="menu-icon purple">📊</view>
+          <view class="menu-content">
+            <text class="menu-title">能耗报告</text>
+            <text class="menu-sub">预览与下载能耗分析</text>
+          </view>
+          <text class="arrow">›</text>
+        </view>
+      </view>
+
+      <view class="menu-card">
+        <view class="menu-item no-border" bindtap="goSettings">
+          <view class="menu-icon gray-dark">⚙</view>
+          <text class="menu-title flex1">设置</text>
+          <text class="arrow">›</text>
+        </view>
+      </view>
+
+      <button class="logout-btn" bindtap="handleLogout">退出登录</button>
+      <text class="copyright">设备全生命周期管理系统 v1.0.0</text>
+    </view>
+  </block>
+</view>

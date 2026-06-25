@@ -1,0 +1,61 @@
+<view class="page">
+  <button wx:if="{{canEdit}}" class="add-btn" bindtap="addRecord">新增维修保养记录</button>
+
+  <view class="tabs">
+    <text
+      wx:for="{{tabs}}"
+      wx:key="key"
+      class="tab {{activeTab === item.key ? 'active' : ''}}"
+      data-key="{{item.key}}"
+      bindtap="switchTab"
+    >{{item.label}}</text>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading">加载中...</view>
+  <view wx:else class="record-list">
+    <view wx:if="{{!records.length}}" class="empty">
+      <text>暂无记录</text>
+    </view>
+
+    <view class="record-card card" wx:for="{{records}}" wx:key="id" data-id="{{item.id}}" bindtap="editRecord">
+      <view class="record-header">
+        <view class="record-title">
+          <text class="type-tag tag-{{item.category}}">{{item.categoryLabel}}</text>
+          <text class="record-device">{{item.deviceName}}</text>
+        </view>
+        <text class="record-result">{{item.result}}</text>
+      </view>
+      <text class="record-type">{{item.type}}</text>
+      <text wx:if="{{item.content}}" class="record-content">{{item.content}}</text>
+      <view class="file-list" wx:if="{{item.files && item.files.length}}">
+        <text
+          class="file-item"
+          wx:for="{{item.files}}"
+          wx:for-item="file"
+          wx:key="fileID"
+          data-fileid="{{file.fileID}}"
+          data-url="{{file.url}}"
+          data-type="{{file.type}}"
+          catchtap="openFile"
+        >{{file.name}}</text>
+      </view>
+      <view class="image-grid" wx:if="{{item.images && item.images.length}}">
+        <image
+          wx:for="{{item.images}}"
+          wx:for-item="image"
+          wx:key="fileID"
+          src="{{image.url || image.fileID}}"
+          mode="aspectFill"
+          data-fileid="{{image.url || image.fileID}}"
+          data-record-index="{{index}}"
+          catchtap="previewImage"
+        />
+      </view>
+      <view class="record-footer">
+        <text class="record-date">{{item.date}}</text>
+        <text class="record-operator">操作人：{{item.operator}}</text>
+      </view>
+      <button wx:if="{{canDelete}}" class="delete-btn" data-id="{{item.id}}" catchtap="deleteRecord">删除</button>
+    </view>
+  </view>
+</view>

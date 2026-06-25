@@ -1,0 +1,141 @@
+page {
+  background-color: #F5F5F5;
+  color: #111827;
+  font-size: 28rpx;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  box-sizing: border-box;
+  animation: pageFadeIn 160ms ease-out;
+}
+
+view, text, image, button, input, scroll-view {
+  box-sizing: border-box;
+}
+
+button {
+  transition: opacity 120ms ease, transform 120ms ease;
+}
+
+button:active {
+  opacity: 0.78;
+  transform: scale(0.98);
+}
+
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.container {
+  min-height: 100vh;
+  padding-bottom: calc(120rpx + env(safe-area-inset-bottom));
+}
+
+.card {
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 32rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+}
+
+.section-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #111827;
+}
+
+.caption {
+  font-size: 24rpx;
+  color: #6B7280;
+}
+
+.text-primary {
+  color: #1E90FF;
+}
+
+.text-danger {
+  color: #EF4444;
+}
+
+.text-warning {
+  color: #F97316;
+}
+
+.text-success {
+  color: #22C55E;
+}
+
+.btn-primary {
+  background: #1E90FF;
+  color: #fff;
+  border-radius: 999rpx;
+  font-size: 28rpx;
+  font-weight: 500;
+  border: none;
+  line-height: normal;
+  padding: 24rpx 80rpx;
+}
+
+.btn-primary::after {
+  border: none;
+}
+
+.btn-outline {
+  background: #fff;
+  color: #1E90FF;
+  border: 2rpx solid #1E90FF;
+  border-radius: 24rpx;
+  font-size: 28rpx;
+  font-weight: 500;
+  line-height: normal;
+  padding: 24rpx;
+}
+
+.btn-outline::after {
+  border: none;
+}
+
+.empty-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120rpx 64rpx;
+}
+
+.empty-icon {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+  background: #E5E7EB;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 32rpx;
+}
+
+.empty-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 16rpx;
+}
+
+.empty-desc {
+  font-size: 28rpx;
+  color: #9CA3AF;
+  text-align: center;
+  margin-bottom: 48rpx;
+}
+
+.list-footer {
+  text-align: center;
+  font-size: 24rpx;
+  color: #9CA3AF;
+  padding: 24rpx 0 48rpx;
+}

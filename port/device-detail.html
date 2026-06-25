@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=440, initial-scale=1.0, viewport-fit=cover">
+  <title>设备详情</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { colors: { primary: '#1E90FF', page: '#F5F5F5' } } }
+    }
+  </script>
+  <style>
+    html, body { width: 440px; height: 956px; overflow: hidden; margin: 0; font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; }
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+  </style>
+</head>
+<body class="bg-page flex flex-col relative">
+
+  <div class="h-[54px] bg-white flex items-end justify-between px-7 pb-1 shrink-0">
+    <span class="text-[15px] font-semibold text-gray-900">9:41</span>
+    <div class="w-[126px] h-[37px] bg-black rounded-full absolute left-1/2 -translate-x-1/2 top-[11px]"></div>
+    <div class="flex items-center gap-1 text-gray-900">
+      <svg class="w-[27px] h-[13px]" viewBox="0 0 27 13" fill="none"><rect x="0.5" y="0.5" width="22" height="12" rx="3" stroke="currentColor"/><rect x="2" y="2" width="17" height="9" rx="1.5" fill="currentColor"/></svg>
+    </div>
+  </div>
+
+  <!-- 二级页导航 -->
+  <div class="h-11 bg-white flex items-center px-4 shrink-0 border-b border-gray-100 relative">
+    <svg class="w-5 h-5 text-gray-700 absolute left-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/></svg>
+    <span class="text-[18px] font-semibold text-gray-900 flex-1 text-center">设备详情</span>
+  </div>
+
+  <div class="flex-1 overflow-y-auto scrollbar-hide pb-6">
+    <!-- 设备头部 -->
+    <div class="bg-white px-4 py-5 border-b border-gray-100">
+      <div class="flex items-start gap-4">
+        <div class="w-16 h-16 rounded-xl bg-red-50 flex items-center justify-center shrink-0">
+          <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.378-.138-.75-.43-.991l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/></svg>
+        </div>
+        <div class="flex-1">
+          <div class="flex items-center gap-2">
+            <h2 class="text-[18px] font-bold text-gray-900">空压机 A-001</h2>
+            <span class="text-[11px] px-2 py-0.5 rounded-full bg-red-50 text-red-500 font-medium">告警</span>
+          </div>
+          <p class="text-[12px] text-gray-500 mt-1">型号：SA-75A · 螺杆式空压机</p>
+          <p class="text-[12px] text-gray-500">位置：车间A · 1区 · 3号位</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 子标签 -->
+    <div class="bg-white flex border-b border-gray-100 sticky top-0 z-10">
+      <span class="flex-1 text-center py-3 text-[14px] font-medium text-primary border-b-2 border-primary">基本信息</span>
+      <span class="flex-1 text-center py-3 text-[14px] text-gray-500">维修记录</span>
+      <span class="flex-1 text-center py-3 text-[14px] text-gray-500">能耗分析</span>
+    </div>
+
+    <!-- 基本信息 -->
+    <div class="px-4 py-4 space-y-3">
+      <div class="bg-white rounded-xl p-4 shadow-sm">
+        <h3 class="text-[14px] font-semibold text-gray-900 mb-3">设备参数</h3>
+        <div class="space-y-3">
+          <div class="flex justify-between"><span class="text-[12px] text-gray-500">设备编号</span><span class="text-[14px] text-gray-900">EQ-2024-A001</span></div>
+          <div class="flex justify-between"><span class="text-[12px] text-gray-500">生产厂家</span><span class="text-[14px] text-gray-900">阿特拉斯·科普柯</span></div>
+          <div class="flex justify-between"><span class="text-[12px] text-gray-500">额定功率</span><span class="text-[14px] text-gray-900">75 kW</span></div>
+          <div class="flex justify-between"><span class="text-[12px] text-gray-500">排气量</span><span class="text-[14px] text-gray-900">12.5 m³/min</span></div>
+          <div class="flex justify-between"><span class="text-[12px] text-gray-500">采购日期</span><span class="text-[14px] text-gray-900">2022-06-15</span></div>
+          <div class="flex justify-between"><span class="text-[12px] text-gray-500">保修截止</span><span class="text-[14px] text-gray-900">2025-06-14</span></div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl p-4 shadow-sm">
+        <h3 class="text-[14px] font-semibold text-gray-900 mb-3">运行状态</h3>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-page rounded-lg p-3 text-center">
+            <p class="text-[12px] text-gray-500">运行时长</p>
+            <p class="text-[16px] font-bold text-gray-900 mt-1">8,520 h</p>
+          </div>
+          <div class="bg-page rounded-lg p-3 text-center">
+            <p class="text-[12px] text-gray-500">排气压力</p>
+            <p class="text-[16px] font-bold text-red-500 mt-1">0.62 MPa</p>
+          </div>
+          <div class="bg-page rounded-lg p-3 text-center">
+            <p class="text-[12px] text-gray-500">排气温度</p>
+            <p class="text-[16px] font-bold text-orange-500 mt-1">98 °C</p>
+          </div>
+          <div class="bg-page rounded-lg p-3 text-center">
+            <p class="text-[12px] text-gray-500">今日能耗</p>
+            <p class="text-[16px] font-bold text-primary mt-1">186 kWh</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl p-4 shadow-sm">
+        <h3 class="text-[14px] font-semibold text-gray-900 mb-3">当前告警</h3>
+        <div class="flex items-start gap-3 p-3 bg-red-50 rounded-lg">
+          <svg class="w-5 h-5 text-red-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/></svg>
+          <div>
+            <p class="text-[14px] font-medium text-red-600">排气温度过高</p>
+            <p class="text-[12px] text-red-400 mt-0.5">当前 98°C，超过阈值 95°C</p>
+            <p class="text-[12px] text-gray-400 mt-1">2026-05-30 08:32 触发</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl p-4 shadow-sm">
+        <h3 class="text-[14px] font-semibold text-gray-900 mb-3">负责人</h3>
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+            <span class="text-[14px] font-medium text-primary">张</span>
+          </div>
+          <div>
+            <p class="text-[14px] font-medium text-gray-900">张明</p>
+            <p class="text-[12px] text-gray-500">维护工程师 · 设备运维中心</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

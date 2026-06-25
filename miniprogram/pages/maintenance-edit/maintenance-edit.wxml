@@ -1,0 +1,55 @@
+<view class="page">
+  <view wx:if="{{loading}}" class="loading">加载中...</view>
+  <view wx:else class="form-card">
+    <view class="field">
+      <text class="label">设备名称</text>
+      <input value="{{form.deviceName}}" data-field="deviceName" bindinput="onInput" placeholder="输入设备名称" />
+    </view>
+    <view class="field">
+      <text class="label">记录类型</text>
+      <input value="{{form.type}}" data-field="type" bindinput="onInput" placeholder="例如 定期保养、故障维修" />
+    </view>
+    <view class="field">
+      <text class="label">日期</text>
+      <picker mode="date" value="{{form.date}}" bindchange="onDateChange">
+        <view class="picker">{{form.date}}</view>
+      </picker>
+    </view>
+    <view class="field">
+      <text class="label">操作人</text>
+      <input value="{{form.operator}}" data-field="operator" bindinput="onInput" placeholder="输入操作人" />
+    </view>
+    <view class="field">
+      <text class="label">处理结果</text>
+      <input value="{{form.result}}" data-field="result" bindinput="onInput" placeholder="例如 正常、已修复" />
+    </view>
+    <view class="field">
+      <text class="label">文字记录</text>
+      <textarea value="{{form.content}}" data-field="content" bindinput="onInput" placeholder="输入维修保养过程、检查结论、后续建议等" />
+    </view>
+    <view class="field">
+      <text class="label">附件</text>
+      <button class="file-btn" loading="{{uploading}}" bindtap="chooseFile">上传 Word/PDF</button>
+      <view class="file-list" wx:if="{{form.files.length}}">
+        <view class="file-item" wx:for="{{form.files}}" wx:key="fileID">
+          <text>{{item.name}}</text>
+          <text class="remove" data-index="{{index}}" bindtap="removeFile">移除</text>
+        </view>
+      </view>
+    </view>
+    <view class="field">
+      <text class="label">图片/照片</text>
+      <button class="file-btn" loading="{{uploading}}" bindtap="chooseImage">上传图片或拍照</button>
+      <view class="image-grid" wx:if="{{form.images.length}}">
+        <view class="image-item" wx:for="{{form.images}}" wx:key="fileID">
+          <image src="{{item.url || item.fileID}}" mode="aspectFill" data-fileid="{{item.url || item.fileID}}" bindtap="previewImage" />
+          <text class="image-remove" data-index="{{index}}" catchtap="removeImage">移除</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="footer">
+    <button class="save-btn" loading="{{saving}}" bindtap="saveRecord">保存记录</button>
+  </view>
+</view>

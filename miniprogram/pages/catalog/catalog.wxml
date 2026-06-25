@@ -1,0 +1,79 @@
+<view class="page">
+  <!-- 未登录 -->
+  <view wx:if="{{!isLoggedIn}}" class="guest-wrap">
+    <view class="guest-icon">📋</view>
+    <text class="guest-title">请先登录</text>
+    <text class="guest-desc">登录后可浏览设备目录</text>
+    <button class="btn-primary" bindtap="goLogin">前往登录</button>
+  </view>
+
+  <block wx:else>
+    <!-- 搜索栏 -->
+    <view class="search-bar">
+      <view class="search-input-wrap">
+        <text class="search-icon">🔍</text>
+        <input
+          class="search-input"
+          placeholder="输入设备名称/型号/地点"
+          value="{{keyword}}"
+          bindinput="onSearchInput"
+          bindconfirm="onSearchConfirm"
+          confirm-type="search"
+        />
+      </view>
+      <button wx:if="{{canEdit}}" class="add-device-btn" bindtap="goCreateDevice">新增设备</button>
+    </view>
+
+    <!-- 筛选栏 -->
+    <view class="filter-bar">
+      <scroll-view scroll-x class="filter-row" enhanced show-scrollbar="{{false}}">
+        <text class="filter-label">地点</text>
+        <text
+          wx:for="{{locations}}"
+          wx:key="*this"
+          class="filter-tag {{selectedLocation === item ? 'active' : ''}}"
+          data-val="{{item}}"
+          bindtap="selectLocation"
+        >{{item}}</text>
+      </scroll-view>
+      <scroll-view scroll-x class="filter-row" enhanced show-scrollbar="{{false}}">
+        <text class="filter-label">类型</text>
+        <text
+          wx:for="{{types}}"
+          wx:key="*this"
+          class="filter-tag {{selectedType === item ? 'active' : ''}}"
+          data-val="{{item}}"
+          bindtap="selectType"
+        >{{item}}</text>
+      </scroll-view>
+      <view class="active-tags" wx:if="{{activeTags.length}}">
+        <text
+          class="active-tag"
+          wx:for="{{activeTags}}"
+          wx:key="*this"
+          data-tag="{{item}}"
+          bindtap="removeTag"
+        >{{item}} ×</text>
+        <text class="reset-btn" bindtap="resetFilters">重置</text>
+      </view>
+    </view>
+
+    <!-- 设备列表 -->
+    <view class="device-list">
+      <view wx:if="{{loading}}" class="skeleton-wrap">
+        <view class="skeleton-card" wx:for="{{[1,2,3]}}" wx:key="*this"></view>
+      </view>
+
+      <block wx:elif="{{devices.length}}">
+        <device-card wx:for="{{devices}}" wx:key="id" device="{{item}}" />
+        <text class="list-footer">{{hasMore ? '上拉加载更多...' : '没有更多数据'}}</text>
+      </block>
+
+      <view wx:else class="empty-wrap">
+        <text class="empty-title">暂无设备</text>
+        <text class="empty-desc">未找到符合条件的设备</text>
+        <button class="btn-outline" bindtap="resetFilters">清除筛选</button>
+      </view>
+    </view>
+  </block>
+</view>

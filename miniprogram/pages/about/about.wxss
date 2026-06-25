@@ -1,0 +1,48 @@
+.page {
+  min-height: 100vh;
+  background: #F5F5F5;
+}
+
+.about-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 120rpx 64rpx;
+}
+
+.logo {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 32rpx;
+  background: linear-gradient(135deg, #1E90FF, #2563EB);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 80rpx;
+  margin-bottom: 32rpx;
+}
+
+.app-name {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #111827;
+}
+
+.version {
+  font-size: 24rpx;
+  color: #9CA3AF;
+  margin: 8rpx 0 48rpx;
+}
+
+.desc {
+  font-size: 28rpx;
+  color: #6B7280;
+  text-align: center;
+  line-height: 1.6;
+  margin-bottom: 64rpx;
+}
+
+.copyright {
+  font-size: 24rpx;
+  color: #9CA3AF;
+}

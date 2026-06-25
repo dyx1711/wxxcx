@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "目录",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "device-card": "/components/device-card/device-card"
+  }
+}

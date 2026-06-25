@@ -1,0 +1,13 @@
+<view class="device-card" bindtap="onTap">
+  <status-tag class="leading-status" status="{{device.displayStatus || device.status}}" text="{{device.displayStatusLabel}}" />
+  <image wx:if="{{device.coverImageUrl || device.coverImage}}" class="device-thumb" src="{{device.coverImageUrl || device.coverImage}}" mode="aspectFill" />
+  <image wx:elif="{{device.images && device.images.length}}" class="device-thumb" src="{{device.images[0].url || device.images[0].fileID}}" mode="aspectFill" />
+  <view wx:else class="device-icon icon-{{device.status}}"></view>
+  <view class="device-info">
+    <view class="device-name-row">
+      <text class="device-name">{{device.name}}</text>
+    </view>
+    <text class="device-meta">型号：{{device.model}} · {{device.location}}{{device.area ? '-' + device.area : ''}}</text>
+  </view>
+  <text class="arrow">›</text>
+</view>

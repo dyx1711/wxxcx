@@ -1,0 +1,154 @@
+<view class="page">
+  <view wx:if="{{!isLoggedIn}}" class="guest-wrap">
+    <view class="guest-icon">⚙</view>
+    <text class="guest-title">请先登录</text>
+    <text class="guest-desc">登录后可查看设备数据、工单以及能耗分析</text>
+    <button class="btn-primary" bindtap="goLogin">前往登录</button>
+  </view>
+
+  <scroll-view wx:else scroll-y class="scroll-body" enhanced show-scrollbar="{{false}}">
+    <view class="welcome">
+      <text class="welcome-date">{{dateStr}}</text>
+      <text class="welcome-name">你好，{{userInfo.nickName}}</text>
+      <text class="welcome-dept">{{userInfo.department}} · {{userInfo.roleName || userInfo.role}}</text>
+    </view>
+
+    <view wx:if="{{loading}}" class="skeleton-wrap">
+      <view class="skeleton-card" wx:for="{{[1,2,3]}}" wx:key="*this"></view>
+    </view>
+
+    <block wx:else>
+      <view class="metrics">
+        <view class="metric-item" bindtap="goCatalog">
+          <text class="metric-num primary">{{stats.totalDevices}}</text>
+          <text class="metric-label">设备总数</text>
+        </view>
+        <view class="metric-item" bindtap="showMaintenanceTypes">
+          <text class="metric-num warning">{{stats.pendingMaintain}}</text>
+          <text class="metric-label">待保养</text>
+        </view>
+        <view class="metric-item" bindtap="goPendingRepair">
+          <text class="metric-num danger">{{stats.pendingRepair}}</text>
+          <text class="metric-label">待维修</text>
+        </view>
+      </view>
+
+      <view class="section">
+        <view class="card">
+          <text class="section-title">设备状态概览</text>
+          <view class="status-row">
+            <canvas id="statusPie" type="2d" class="status-pie"></canvas>
+            <view class="status-list">
+              <view class="status-item">
+                <view class="dot dot-green"></view>
+                <text class="status-name">在线</text>
+                <text class="status-val">{{statusOverview.online.count}} ({{statusOverview.online.percent}}%)</text>
+              </view>
+              <view class="status-item">
+                <view class="dot dot-red"></view>
+                <text class="status-name">故障</text>
+                <text class="status-val">{{statusOverview.fault.count}} ({{statusOverview.fault.percent}}%)</text>
+              </view>
+              <view class="status-item">
+                <view class="dot dot-orange"></view>
+                <text class="status-name">待保养</text>
+                <text class="status-val">{{statusOverview.maintain.count}} ({{statusOverview.maintain.percent}}%)</text>
+              </view>
+            </view>
+          </view>
+          <view class="main-device-areas" wx:if="{{mainDeviceAreas.length}}">
+            <view class="main-device-area main-device-area-{{area.key}}" wx:for="{{mainDeviceAreas}}" wx:for-item="area" wx:key="key">
+              <view class="main-device-area-title">{{area.title}}</view>
+
+              <view wx:if="{{area.key === 'blowerRoom'}}" class="main-device-blower-layout">
+                <view class="main-device-blower-column">
+                  <block wx:for="{{area.devices}}" wx:for-item="device" wx:for-index="deviceIndex" wx:key="name">
+                    <view wx:if="{{deviceIndex < 2}}" class="main-device-card main-device-card-blower-left main-device-{{device.statusClass}}">
+                      <text class="main-device-name">{{device.name}}</text>
+                      <text wx:if="{{device.count !== 1}}" class="main-device-count">{{device.count}}台</text>
+                      <text class="main-device-status">{{device.statusLabel}}</text>
+                    </view>
+                  </block>
+                </view>
+                <view class="main-device-blower-column">
+                  <block wx:for="{{area.devices}}" wx:for-item="device" wx:for-index="deviceIndex" wx:key="name">
+                    <view wx:if="{{deviceIndex > 1}}" class="main-device-card main-device-card-blower-right main-device-{{device.statusClass}}">
+                      <text class="main-device-name">{{device.name}}</text>
+                      <text wx:if="{{device.count !== 1}}" class="main-device-count">{{device.count}}台</text>
+                      <text class="main-device-status">{{device.statusLabel}}</text>
+                    </view>
+                  </block>
+                </view>
+              </view>
+
+              <view wx:else class="main-device-grid main-device-grid-{{area.key}}">
+                <view
+                  class="main-device-card main-device-{{device.statusClass}}"
+                  wx:for="{{area.devices}}"
+                  wx:for-item="device"
+                  wx:key="name"
+                >
+                  <text class="main-device-name">{{device.name}}</text>
+                  <text wx:if="{{device.count !== 1}}" class="main-device-count">{{device.count}}台</text>
+                  <text class="main-device-status">{{device.statusLabel}}</text>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class="section">
+        <view class="section-header">
+          <text class="section-title">待办事项</text>
+          <text class="link" bindtap="goWorkorders">查看更多 ›</text>
+        </view>
+        <view class="todo-list" wx:if="{{todos.length}}">
+          <view
+            class="todo-item card"
+            wx:for="{{todos}}"
+            wx:key="id"
+            data-id="{{item.id}}"
+            bindtap="goWorkorderDetail"
+          >
+            <image
+              wx:if="{{item.images && item.images.length}}"
+              class="todo-thumb"
+              src="{{item.images[0].url || item.images[0].fileID}}"
+              mode="aspectFill"
+            />
+            <view wx:else class="todo-icon todo-{{item.type === 'repair' ? 'repair' : 'maintain'}}"></view>
+            <view class="todo-content">
+              <text class="todo-title">{{item.title}}</text>
+              <text class="todo-meta">{{item.typeLabel}} · {{item.location || '未设置位置'}}</text>
+              <text class="todo-deadline {{item.deadlineClass}}">期望完成：{{item.deadline || '未设置'}}</text>
+            </view>
+            <text class="arrow">›</text>
+          </view>
+        </view>
+        <view wx:else class="empty-card">暂无待办工单</view>
+      </view>
+
+      <view class="section">
+        <view class="card">
+          <view class="section-header">
+            <text class="section-title">能耗趋势</text>
+            <view class="period-switch">
+              <text class="period-btn {{energyPeriod === 'day' ? 'active' : ''}}" data-period="day" bindtap="switchEnergy">日</text>
+              <text class="period-btn {{energyPeriod === 'week' ? 'active' : ''}}" data-period="week" bindtap="switchEnergy">周</text>
+              <text class="period-btn {{energyPeriod === 'month' ? 'active' : ''}}" data-period="month" bindtap="switchEnergy">月</text>
+            </view>
+          </view>
+          <view class="chart" wx:if="{{energyData.data.length}}">
+            <view class="chart-bar-wrap" wx:for="{{energyData.data}}" wx:key="key">
+              <view class="chart-bar" style="height: {{item.value}}%; opacity: {{0.2 + item.value / 120}}"></view>
+              <text class="chart-label">{{item.label}}</text>
+            </view>
+          </view>
+          <view wx:else class="empty-chart">暂无能耗数据</view>
+          <text class="chart-footer">单位：{{energyData.unit}} · {{energyPeriod === 'day' ? '近7日' : (energyPeriod === 'week' ? '近8周' : '近6月')}}总能耗 {{energyData.total}}</text>
+        </view>
+      </view>
+    </block>
+  </scroll-view>
+</view>

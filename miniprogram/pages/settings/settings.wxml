@@ -1,0 +1,77 @@
+<view class="page">
+  <view class="identity-card">
+    <text class="section-title">我的身份</text>
+    <view class="identity-row"><text>姓名</text><text>{{userInfo.nickName || '未登录'}}</text></view>
+    <view class="identity-row"><text>角色</text><text>{{userInfo.roleName || userInfo.role || '-'}}</text></view>
+    <view class="identity-row"><text>部门</text><text>{{userInfo.department || '-'}}</text></view>
+    <view class="identity-row"><text>OpenID</text><text class="openid">{{userInfo.openid || '-'}}</text></view>
+  </view>
+
+  <view class="menu-card">
+    <view class="menu-item" bindtap="changePassword">
+      <text class="menu-title">登录方式</text>
+      <text class="arrow">微信云开发登录</text>
+    </view>
+    <view class="menu-item no-border" bindtap="clearCache">
+      <text class="menu-title">清除缓存</text>
+      <text class="arrow">›</text>
+    </view>
+  </view>
+
+  <block wx:if="{{canManage}}">
+    <view class="admin-card">
+      <text class="section-title">白名单管理</text>
+      <view class="field">
+        <text class="label">OpenID</text>
+        <input value="{{form.openid}}" data-field="openid" bindinput="onInput" placeholder="填写允许登录用户的 OpenID" />
+      </view>
+      <view class="field">
+        <text class="label">姓名</text>
+        <input value="{{form.name}}" data-field="name" bindinput="onInput" placeholder="用户姓名" />
+      </view>
+      <view class="field">
+        <text class="label">公司</text>
+        <input value="{{form.company}}" data-field="company" bindinput="onInput" placeholder="公司名称" />
+      </view>
+      <view class="field">
+        <text class="label">部门</text>
+        <input value="{{form.department}}" data-field="department" bindinput="onInput" placeholder="部门名称" />
+      </view>
+      <view class="field">
+        <text class="label">角色</text>
+        <picker mode="selector" range="{{roleLabels}}" value="{{roleIndex}}" bindchange="onRoleChange">
+          <view class="picker">{{roleLabels[roleIndex]}}</view>
+        </picker>
+      </view>
+      <view class="switch-row">
+        <text>可查看</text>
+        <switch checked="{{form.permissions.canView}}" data-field="canView" bindchange="onPermissionChange" />
+      </view>
+      <view class="switch-row">
+        <text>可编辑</text>
+        <switch checked="{{form.permissions.canEdit}}" data-field="canEdit" bindchange="onPermissionChange" />
+      </view>
+      <view class="switch-row">
+        <text>可管理白名单</text>
+        <switch checked="{{form.permissions.canManage}}" data-field="canManage" bindchange="onPermissionChange" />
+      </view>
+      <view class="form-actions">
+        <button class="secondary-btn" bindtap="resetForm">重置</button>
+        <button class="primary-btn" bindtap="saveWhitelist">保存白名单</button>
+      </view>
+    </view>
+
+    <view class="user-list">
+      <text class="section-title">已配置用户</text>
+      <view wx:if="{{loadingUsers}}" class="loading">加载中...</view>
+      <view class="user-item" wx:for="{{whitelist}}" wx:key="openid">
+        <view class="user-main" data-index="{{index}}" bindtap="editWhitelist">
+          <text class="user-name">{{item.name || item.openid}}</text>
+          <text class="user-meta">{{item.role}} · {{item.status}}</text>
+          <text class="user-openid">{{item.openid}}</text>
+        </view>
+        <text class="remove" data-openid="{{item.openid}}" catchtap="removeWhitelist">移出</text>
+      </view>
+    </view>
+  </block>
+</view>

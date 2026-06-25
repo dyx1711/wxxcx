@@ -1,0 +1,100 @@
+<view class="page" wx:if="{{device}}">
+  <!-- 设备头部 -->
+  <view class="device-header">
+    <image wx:if="{{device.coverImageUrl || device.coverImage}}" class="device-thumb" src="{{device.coverImageUrl || device.coverImage}}" mode="aspectFill" />
+    <image wx:elif="{{device.images && device.images.length}}" class="device-thumb" src="{{device.images[0].url || device.images[0].fileID}}" mode="aspectFill" />
+    <view wx:else class="device-icon-wrap icon-{{device.status}}">⚙</view>
+    <view class="device-main">
+      <view class="name-row">
+        <text class="device-name">{{device.name}}</text>
+        <status-tag status="{{device.status}}" />
+      </view>
+      <text class="device-meta">型号：{{device.model}} · {{device.typeLabel}}</text>
+      <text class="device-meta">位置：{{device.location}} · {{device.area}}{{device.position ? ' · ' + device.position : ''}}</text>
+    </view>
+    <view class="device-actions">
+      <button class="repair-btn" bindtap="reportRepair">报修</button>
+      <button class="qr-btn" loading="{{generatingQr}}" bindtap="generateQrCode">二维码</button>
+      <button wx:if="{{canEdit}}" class="edit-btn" bindtap="editDevice">编辑</button>
+    </view>
+  </view>
+
+  <!-- 子标签 -->
+  <view class="tabs">
+    <text class="tab {{activeTab === 0 ? 'active' : ''}}" data-index="0" bindtap="switchTab">基本信息</text>
+    <text class="tab {{activeTab === 1 ? 'active' : ''}}" data-index="1" bindtap="switchTab">维修记录</text>
+    <text class="tab {{activeTab === 2 ? 'active' : ''}}" data-index="2" bindtap="switchTab">能耗分析</text>
+  </view>
+
+  <view class="content" wx:if="{{activeTab === 0}}">
+    <view class="card">
+      <text class="card-title">设备参数</text>
+      <view class="info-row"><text class="info-label">设备编号</text><text class="info-val">{{device.code}}</text></view>
+      <view class="info-row"><text class="info-label">生产厂家</text><text class="info-val">{{device.manufacturer}}</text></view>
+      <view class="info-row"><text class="info-label">规格型号</text><text class="info-val">{{device.power}}</text></view>
+      <view class="info-row" wx:if="{{device.displacement}}"><text class="info-label">排气量</text><text class="info-val">{{device.displacement}}</text></view>
+      <view class="info-row"><text class="info-label">投用日期</text><text class="info-val">{{device.purchaseDate}}</text></view>
+      <view class="info-row" wx:if="{{device.parameters}}"><text class="info-label">相关参数</text><text class="info-val">{{device.parameters}}</text></view>
+    </view>
+
+    <view class="card" wx:if="{{device.runtime}}">
+      <text class="card-title">运行状态</text>
+      <view class="stats-grid">
+        <view class="stat-item"><text class="stat-label">运行时长</text><text class="stat-val">{{device.runtime}}</text></view>
+        <view class="stat-item" wx:if="{{device.pressure}}"><text class="stat-label">排气压力</text><text class="stat-val danger">{{device.pressure}}</text></view>
+        <view class="stat-item" wx:if="{{device.temperature}}"><text class="stat-label">排气温度</text><text class="stat-val warning">{{device.temperature}}</text></view>
+        <view class="stat-item" wx:if="{{device.todayEnergy}}"><text class="stat-label">今日能耗</text><text class="stat-val primary">{{device.todayEnergy}}</text></view>
+      </view>
+    </view>
+
+    <view class="card" wx:if="{{device.maintenanceGuide && (device.maintenanceGuide.text || (device.maintenanceGuide.files && device.maintenanceGuide.files.length))}}">
+      <text class="card-title">维修指南</text>
+      <text wx:if="{{device.maintenanceGuide.text}}" class="guide-text">{{device.maintenanceGuide.text}}</text>
+      <view class="guide-file-list" wx:if="{{device.maintenanceGuide.files && device.maintenanceGuide.files.length}}">
+        <text
+          class="guide-file"
+          wx:for="{{device.maintenanceGuide.files}}"
+          wx:key="fileID"
+          data-fileid="{{item.fileID}}"
+          data-url="{{item.url}}"
+          data-type="{{item.type}}"
+          catchtap="openGuideFile"
+        >{{item.name}}</text>
+      </view>
+    </view>
+
+    <view class="card" wx:if="{{device.alert}}">
+      <text class="card-title">当前告警</text>
+      <view class="alert-box">
+        <text class="alert-title">⚠ {{device.alert.title}}</text>
+        <text class="alert-desc">{{device.alert.desc}}</text>
+        <text class="alert-time">{{device.alert.time}}</text>
+      </view>
+    </view>
+
+    <view class="card" wx:if="{{device.owner}}">
+      <text class="card-title">负责人</text>
+      <view class="owner-row">
+        <view class="owner-avatar">{{device.owner.name[0]}}</view>
+        <view>
+          <text class="owner-name">{{device.owner.name}}</text>
+          <text class="owner-role">{{device.owner.role}} · {{device.owner.dept}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{qrVisible}}" class="qr-mask" catchtap="closeQr">
+    <view class="qr-panel" catchtap="noop">
+      <image class="qr-image" src="{{qrInfo.fileID}}" mode="aspectFit" />
+      <text class="qr-name">{{device.name}}</text>
+      <view class="qr-actions">
+        <button class="qr-save" loading="{{savingQr}}" bindtap="saveQrImage">保存到相册</button>
+        <button class="qr-close" bindtap="closeQr">关闭</button>
+      </view>
+    </view>
+  </view>
+  <canvas id="qrCanvas" type="2d" class="qr-canvas"></canvas>
+</view>
+
+<view wx:if="{{loading}}" class="loading-wrap">加载中...</view>
