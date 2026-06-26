@@ -206,6 +206,23 @@
   color: #D1D5DB;
 }
 
+.subscribe-state {
+  font-size: 24rpx;
+  padding: 8rpx 18rpx;
+  border-radius: 999rpx;
+  flex-shrink: 0;
+}
+
+.subscribe-state.on {
+  color: #15803D;
+  background: #DCFCE7;
+}
+
+.subscribe-state.off {
+  color: #2563EB;
+  background: #DBEAFE;
+}
+
 .logout-btn {
   width: 100%;
   background: #fff;

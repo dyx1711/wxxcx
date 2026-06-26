@@ -8,6 +8,17 @@ const USERS = 'users'
 const DEVICES = 'devices'
 const WORKORDERS = 'repair_workorders'
 const ENERGY = 'energy_records'
+const CONFIG = 'app_config'
+const SUBSCRIBE_CONFIG_ID = 'subscribeMessage'
+
+const DEFAULT_FIELD_MAPS = {
+  maintenanceCreated: {
+    deviceName: 'thing1',
+    title: 'thing2',
+    dueDate: 'date3',
+    status: 'phrase4'
+  }
+}
 
 const MAIN_DEVICE_AREAS = [
   {
@@ -46,6 +57,93 @@ function canView(user) {
 
 function canManage(user) {
   return user && user.role === 'admin'
+}
+
+async function getSubscribeConfig() {
+  const res = await db.collection(CONFIG).doc(SUBSCRIBE_CONFIG_ID).get().catch(() => null)
+  const data = res && res.data || {}
+  return {
+    maintenanceCreatedTemplateId: data.maintenanceCreatedTemplateId || process.env.MAINTENANCE_CREATED_TEMPLATE_ID || '',
+    miniprogramState: data.miniprogramState || process.env.WECHAT_MINIPROGRAM_STATE || 'formal',
+    fieldMaps: {
+      maintenanceCreated: {
+        ...DEFAULT_FIELD_MAPS.maintenanceCreated,
+        ...(data.fieldMaps && data.fieldMaps.maintenanceCreated)
+      }
+    }
+  }
+}
+
+function fieldLimit(field = '') {
+  if (field.startsWith('phrase')) return 5
+  if (field.startsWith('thing')) return 20
+  if (field.startsWith('name')) return 10
+  return 32
+}
+
+function templateValue(value, field) {
+  const text = String(value || '').replace(/\s+/g, ' ').trim() || '-'
+  const limit = fieldLimit(field)
+  return text.length > limit ? text.slice(0, limit) : text
+}
+
+function buildTemplateData(fieldMap = {}, values = {}) {
+  return Object.keys(fieldMap).reduce((data, key) => {
+    const field = fieldMap[key]
+    if (field) data[field] = { value: templateValue(values[key], field) }
+    return data
+  }, {})
+}
+
+function canReceiveSubscribe(user, key) {
+  const prefs = user && user.subscribeMessages
+  return !!(prefs && prefs.enabled && prefs[key])
+}
+
+async function sendSubscribeMessage(touser, templateId, page, data, miniprogramState) {
+  if (!touser || !templateId) return null
+  return cloud.openapi.subscribeMessage.send({
+    touser,
+    templateId,
+    page,
+    data,
+    miniprogramState,
+    lang: 'zh_CN'
+  }).catch(err => {
+    console.warn('subscribeMessage.send failed', err)
+    return null
+  })
+}
+
+async function getSubscribedAdmins(key) {
+  const res = await db.collection(USERS).where({
+    status: 'active',
+    role: 'admin'
+  }).field({
+    openid: true,
+    subscribeMessages: true
+  }).limit(200).get().catch(() => ({ data: [] }))
+  return res.data.filter(user => canReceiveSubscribe(user, key))
+}
+
+async function notifyMaintenanceCreated(device, dueDate, orderId) {
+  const config = await getSubscribeConfig()
+  if (!config.maintenanceCreatedTemplateId) return null
+  const admins = await getSubscribedAdmins('maintenanceCreated')
+  if (!admins.length) return null
+  const data = buildTemplateData(config.fieldMaps.maintenanceCreated, {
+    deviceName: device.name || '设备',
+    title: '定期保养工单',
+    dueDate: formatDate(dueDate),
+    status: '待派工'
+  })
+  return Promise.all(admins.map(admin => sendSubscribeMessage(
+    admin.openid,
+    config.maintenanceCreatedTemplateId,
+    `pages/workorder-detail/workorder-detail?id=${orderId}`,
+    data,
+    config.miniprogramState
+  )))
 }
 
 function pad(n) {
@@ -374,6 +472,7 @@ async function ensureMaintenanceWorkorders(devices = [], openid = '') {
     if (id) {
       createdCount += 1
       maintainRes.data.push({ _id: id, deviceId: item.device._id, deviceName: item.device.name })
+      await notifyMaintenanceCreated(item.device, item.dueDate, id).catch(() => null)
     }
   }
 

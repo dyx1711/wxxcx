@@ -8,6 +8,18 @@ const WORKORDERS = 'repair_workorders'
 const RECORDS = 'maintenance_records'
 const USERS = 'users'
 const DEVICES = 'devices'
+const CONFIG = 'app_config'
+const SUBSCRIBE_CONFIG_ID = 'subscribeMessage'
+
+const DEFAULT_FIELD_MAPS = {
+  workorderAssigned: {
+    deviceName: 'thing1',
+    title: 'thing2',
+    location: 'thing3',
+    time: 'time4',
+    status: 'phrase5'
+  }
+}
 
 function ok(data) {
   return { code: 0, data }
@@ -32,6 +44,82 @@ function canManage(user) {
 
 function displayName(user) {
   return user && (user.nickName || user.name) || '微信用户'
+}
+
+async function getSubscribeConfig() {
+  const res = await db.collection(CONFIG).doc(SUBSCRIBE_CONFIG_ID).get().catch(() => null)
+  const data = res && res.data || {}
+  return {
+    workorderAssignedTemplateId: data.workorderAssignedTemplateId || process.env.WORKORDER_ASSIGNED_TEMPLATE_ID || '',
+    miniprogramState: data.miniprogramState || process.env.WECHAT_MINIPROGRAM_STATE || 'formal',
+    fieldMaps: {
+      workorderAssigned: {
+        ...DEFAULT_FIELD_MAPS.workorderAssigned,
+        ...(data.fieldMaps && data.fieldMaps.workorderAssigned)
+      }
+    }
+  }
+}
+
+function fieldLimit(field = '') {
+  if (field.startsWith('phrase')) return 5
+  if (field.startsWith('thing')) return 20
+  if (field.startsWith('name')) return 10
+  return 32
+}
+
+function templateValue(value, field) {
+  const text = String(value || '').replace(/\s+/g, ' ').trim() || '-'
+  const limit = fieldLimit(field)
+  return text.length > limit ? text.slice(0, limit) : text
+}
+
+function buildTemplateData(fieldMap = {}, values = {}) {
+  return Object.keys(fieldMap).reduce((data, key) => {
+    const field = fieldMap[key]
+    if (field) data[field] = { value: templateValue(values[key], field) }
+    return data
+  }, {})
+}
+
+function canReceiveSubscribe(user, key) {
+  const prefs = user && user.subscribeMessages
+  return !!(prefs && prefs.enabled && prefs[key])
+}
+
+async function sendSubscribeMessage(touser, templateId, page, data, miniprogramState) {
+  if (!touser || !templateId) return null
+  return cloud.openapi.subscribeMessage.send({
+    touser,
+    templateId,
+    page,
+    data,
+    miniprogramState,
+    lang: 'zh_CN'
+  }).catch(err => {
+    console.warn('subscribeMessage.send failed', err)
+    return null
+  })
+}
+
+async function sendWorkorderAssignedNotice(order, assignee, orderId, textTime) {
+  if (!canReceiveSubscribe(assignee, 'workorderAssigned')) return null
+  const config = await getSubscribeConfig()
+  if (!config.workorderAssignedTemplateId) return null
+  const data = buildTemplateData(config.fieldMaps.workorderAssigned, {
+    deviceName: order.deviceName || '设备',
+    title: order.title || `${repairTypeLabel(getRepairType(order))}工单`,
+    location: order.location || '未填写',
+    time: textTime,
+    status: '待处理'
+  })
+  return sendSubscribeMessage(
+    assignee.openid,
+    config.workorderAssignedTemplateId,
+    `pages/workorder-detail/workorder-detail?id=${orderId}`,
+    data,
+    config.miniprogramState
+  )
 }
 
 function formatNow() {
@@ -398,6 +486,7 @@ exports.main = async (event = {}) => {
         updatedBy: OPENID
       }
     })
+    await sendWorkorderAssignedNotice(order, assignee, event.id, textTime)
     return ok({ id: event.id })
   }
 

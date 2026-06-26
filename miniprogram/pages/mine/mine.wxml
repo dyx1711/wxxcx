@@ -62,6 +62,22 @@
       </view>
 
       <view class="menu-card">
+        <view class="menu-item" bindtap="handleSubscribeMessage" data-type="workorderAssigned">
+          <view class="menu-icon blue">🔔</view>
+          <view class="menu-content">
+            <text class="menu-title">派工提醒</text>
+            <text class="menu-sub">{{subscribeLoadingType === 'workorderAssigned' ? '正在处理订阅授权...' : workorderSubscribeSummary}}</text>
+          </view>
+          <text class="subscribe-state {{subscribePreferences.workorderAssigned ? 'on' : 'off'}}">{{subscribePreferences.workorderAssigned ? '已授权' : '授权一次'}}</text>
+        </view>
+        <view class="menu-item" bindtap="handleSubscribeMessage" data-type="maintenanceCreated">
+          <view class="menu-icon green">🔔</view>
+          <view class="menu-content">
+            <text class="menu-title">保养提醒</text>
+            <text class="menu-sub">{{subscribeLoadingType === 'maintenanceCreated' ? '正在处理订阅授权...' : maintenanceSubscribeSummary}}</text>
+          </view>
+          <text class="subscribe-state {{subscribePreferences.maintenanceCreated ? 'on' : 'off'}}">{{subscribePreferences.maintenanceCreated ? '已授权' : '授权一次'}}</text>
+        </view>
         <view class="menu-item no-border" bindtap="goSettings">
           <view class="menu-icon gray-dark">⚙</view>
           <text class="menu-title flex1">设置</text>

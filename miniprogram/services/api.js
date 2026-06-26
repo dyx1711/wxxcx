@@ -129,6 +129,14 @@ function removePermissionUser(openid) {
   return mutateCloud('userPermissionManage', { action: 'remove', openid })
 }
 
+function getSubscribeMessageStatus() {
+  return callCloudCached('messageSubscribe', { action: 'status' }, 10000)
+}
+
+function saveSubscribeMessageStatus(result, type) {
+  return mutateCloud('messageSubscribe', { action: 'save', result, type })
+}
+
 function getEnergyReport() {
   return callCloudCached('energyAnalysis', { action: 'report' }, 20000)
 }
@@ -185,5 +193,7 @@ module.exports = {
   generateDeviceQrCode,
   getPermissionUsers,
   savePermissionUser,
-  removePermissionUser
+  removePermissionUser,
+  getSubscribeMessageStatus,
+  saveSubscribeMessageStatus
 }
